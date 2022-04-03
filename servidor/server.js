@@ -5,16 +5,27 @@ const cors = require('cors');
 const app = express();
 const Usuarios = require('./controlador/usuarios');
 const Login = require('./controlador/login');
-const jwt = require('jsonwebtoken');
+const verificarJWT = require('./middleware/verificarJWT');
+const cookieParser = require('cookie-parser');
+const refrescarJWT = require('./middleware/refrescarJWT');
+const logoutToken = require('./middleware/logoutToken');
+const credenciales = require('./middleware/credenciales');
+const corsOptions = require('./middleware/corsOptions');
 
 //--------MIDDLEWARE-----------
-app.use(cors());
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended : true }));
+app.use(credenciales);//Esto es para limitar quienes pueden acceder a la aplicaciòn, no es obligatorio
+app.use(cors(corsOptions));//Para intercambiar recursos entre cliente y servidor, el argumento no es obligacion
+app.use(express.json());//Para los JSON
+app.use(bodyParser.urlencoded({ extended : true }));//para enviar los formularios al servidor
+app.use(cookieParser());//Para las cookies
 
 //-------LLAMADAS API----------
-app.use('/api/usuario/', Usuarios);
+app.use('/api/', logoutToken);
+app.use('/api/', refrescarJWT);
 app.use('/api/', Login);
+app.use(verificarJWT);//Los que estan bajo este middleware requeriran autenticacion
+app.use('/api/usuario/', Usuarios);
+
 
 //------SUBIR APP--------------
 app.listen(process.env.PORT_NODE, ()=>{
