@@ -1,6 +1,5 @@
 const router = require('express').Router();
 const Usuarios = require('../modelo/Usuarios');
-const RouterRespuestas = require('../utils/RouterRespuestas');
 const usuario = new Usuarios();
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -28,15 +27,16 @@ router.post("/login", async (req, res)=>{
         usuarioOnline.setUsuariosOnline(usuarioConsultado,refreshToken)
         //Guardamos el jwt en una cockie que dura un dia
         res.cookie('jwt',refreshToken,{ httpOnly : true, sameSite : 'None', secure : true, maxAge : 24 * 60 * 60 * 1000});
-        res.json({accessToken});
+        res.json({accessToken, 
+                    idUsuario : usuarioConsultado.idUsuario, 
+                    nombreUsuario : usuarioConsultado.nombreUsuario, 
+                    apellidoUsuario : usuarioConsultado.apellidoUsuario, 
+                    rutUsuario : usuarioConsultado.rutUsuario,
+                    Permiso_idPermiso : usuarioConsultado.Permiso_idPermiso});
         //console.log(await usuarioOnline.listar());
     }else{
         res.sendStatus(401);
     }
-    /*RouterRespuestas(
-                    async ()=> ,
-                    res
-                    );*/
 });
 
 module.exports = router;

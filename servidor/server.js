@@ -5,6 +5,7 @@ const cors = require('cors');
 const app = express();
 const Usuarios = require('./controlador/usuarios');
 const Login = require('./controlador/login');
+const Permisos = require('./controlador/permisos');
 const verificarJWT = require('./middleware/verificarJWT');
 const cookieParser = require('cookie-parser');
 const refrescarJWT = require('./middleware/refrescarJWT');
@@ -25,6 +26,7 @@ app.use('/api/', refrescarJWT);
 app.use('/api/', Login);
 app.use(verificarJWT);//Los que estan bajo este middleware requeriran autenticacion
 app.use('/api/usuario/', Usuarios);
+app.use('/api/permisos/', Permisos);
 
 
 //------SUBIR APP--------------

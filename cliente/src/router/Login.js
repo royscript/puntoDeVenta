@@ -1,11 +1,11 @@
 import { useState } from "react";
 import axios from '../api/axios';
 import { Formik, Form } from "formik";
-import Input from "./formulario/Input";
-import Boton from "./formulario/Boton";
-import Alerta from "./formulario/Alerta";
+import Input from "../components/formulario/Input";
+import Boton from "../components/formulario/Boton";
+import Alerta from "../components/formulario/Alerta";
 
-const Login = ()=>{
+const Login = ({autenticar})=>{
     const [errorLogin, setErrorLogin] = useState(null);
     return(
         <Formik
@@ -27,9 +27,10 @@ const Login = ()=>{
                 }
             }
             onSubmit={async values=>{
-                axios.post(`/login`, { rutUsuario : values.rutUsuario, contrasena : values.contrasena })
+                axios.post('/login', { rutUsuario : values.rutUsuario, contrasena : values.contrasena })
                     .then(res => {
                         console.log(res);
+                        autenticar(res.data)
                 }, error =>{
                     if (error.response.status === 401) {
                         setErrorLogin("Usuario o contraseña incorrectas");
@@ -40,8 +41,8 @@ const Login = ()=>{
             <Form>
                 <div className="card" style={{"width": "18rem"}}>
                     <div className="card-body">
-                        <Input name="rutUsuario" label="Usuario"/>
-                        <Input name="contrasena" label="Contraseña"/>
+                        <Input name="rutUsuario" label="Usuario" type="text"/>
+                        <Input name="contrasena" label="Contraseña" type="password"/>
                     </div>
                     <div className="card-footer">
                         <Boton label={"Enviar"}/>
