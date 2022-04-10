@@ -12,6 +12,11 @@ const refrescarJWT = require('./middleware/refrescarJWT');
 const logoutToken = require('./middleware/logoutToken');
 const credenciales = require('./middleware/credenciales');
 const corsOptions = require('./middleware/corsOptions');
+//---------MODELO-------------
+const Productos = require('./controlador/productos');
+const FamiliaProducto = require('./controlador/familia');
+const Estado = require('./controlador/estado');
+//----------------------------
 
 //--------MIDDLEWARE-----------
 app.use(credenciales);//Esto es para limitar quienes pueden acceder a la aplicaciòn, no es obligatorio
@@ -24,9 +29,12 @@ app.use(cookieParser());//Para las cookies
 app.use('/api/', logoutToken);
 app.use('/api/', refrescarJWT);
 app.use('/api/', Login);
-app.use(verificarJWT);//Los que estan bajo este middleware requeriran autenticacion
+//app.use(verificarJWT);//Los que estan bajo este middleware requeriran autenticacion
 app.use('/api/usuario/', Usuarios);
 app.use('/api/permisos/', Permisos);
+app.use('/api/productos/', Productos);
+app.use('/api/familia-producto/', FamiliaProducto);
+app.use('/api/estado/', Estado);
 
 
 //------SUBIR APP--------------

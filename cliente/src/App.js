@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Routes, Route, Navigate } from 'react-router';
+import { Routes, Route } from 'react-router';
 import './App.css';
 import Login from './router/Login';
 import Home from './router/Home';
 import { useNavigate } from 'react-router-dom';
 import PaginaNoEncontrada from './router/PaginaNoEncontrada';
 import axios from './api/axios';
+import Productos from './router/Productos';
 function App() {
     const [usuario, setUsuario] = useState();
     const [sesion, setSesion] = useState(null);
@@ -22,11 +23,45 @@ function App() {
         })
     }
     const conseguirPermisos = async ()=>{
-      console.log("usuario");
-      console.log(usuario);
+      //console.log("usuario");
+      //console.log(usuario);
+
+      let isMounted = true;
+      const controller = new AbortController();
+
+      try {
+          const refreshToken = await axios.post('/permisos/refreshToken',[], {
+                        headers: {
+                        'Authorization': usuario.accessToken
+                      }
+          })
+          //console.log(refreshToken); 
+          const response = await axios.post('/permisos/listar', {
+                                                                signal: controller.signal,
+                                                                idPermiso : usuario.idPermiso
+                                                                }, {
+                                                                  headers: {
+                                                                  'Authorization': usuario.accessToken
+                                                                }
+          })
+          
+          //console.log(response.data);
+          //isMounted && setUsers(response.data);
+      } catch (err) {
+          //console.error(err);
+         // navigate('/login', { state: { from: location }, replace: true });
+      }
+      
+
+
+        return () => {
+            isMounted = false;
+            controller.abort();
+        }
+
       axios.post('/permisos/listar', { idPermiso : usuario.idPermiso })
             .then(res => {
-                console.log(res);
+                //console.log(res);
                 setPermisos(res.data)
         }, error =>{
             if (error.response.status === 401) {
@@ -42,7 +77,6 @@ function App() {
     }
     useEffect(()=>{
       if(sesion==true){
-        conseguirPermisos();
         navigate("/home");
       }
       
@@ -65,7 +99,12 @@ function App() {
         {sesion &&(
            <Route 
            path="/home" 
-           element={<Home logOut={logOut} conseguirPermisos={conseguirPermisos}/>}/>
+           element={<Home logOut={logOut} conseguirPermisos={conseguirPermisos} usuario={usuario}/>}/>
+        )}
+        {sesion &&(
+           <Route 
+           path="/productos" 
+           element={<Productos logOut={logOut} conseguirPermisos={conseguirPermisos} usuario={usuario}/>}/>
         )}
         <Route
           path="*"

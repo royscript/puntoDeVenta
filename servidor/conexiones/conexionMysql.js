@@ -20,5 +20,10 @@ class conexionMysql {
             });
         });
     }
+    paginador(pagSiguiente, cantPorPag){
+        pagSiguiente = (parseInt(pagSiguiente) - 1)*parseInt(cantPorPag);
+        cantPorPag = parseInt(cantPorPag);
+        return ` LIMIT ${pagSiguiente}, ${cantPorPag}`;
+    }
 }
 module.exports = conexionMysql;

@@ -27,7 +27,11 @@ const Login = ({autenticar})=>{
                 }
             }
             onSubmit={async values=>{
-                axios.post('/login', { rutUsuario : values.rutUsuario, contrasena : values.contrasena })
+                axios.post('/login', { rutUsuario : values.rutUsuario, contrasena : values.contrasena },
+                {
+                    headers: { 'Content-Type': 'application/json' },
+                    withCredentials: true
+                })
                     .then(res => {
                         console.log(res);
                         autenticar(res.data)
@@ -45,7 +49,7 @@ const Login = ({autenticar})=>{
                         <Input name="contrasena" label="Contraseña" type="password"/>
                     </div>
                     <div className="card-footer">
-                        <Boton label={"Enviar"}/>
+                        <Boton label={"Enviar"} type={"submit"}/>
                         <br/>
                         {errorLogin!=null?<Alerta contenido={errorLogin}/>:null}
                     </div>
