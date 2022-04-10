@@ -5,7 +5,6 @@ const producto = new Productos();
 
 router.post("/listar",(req, res)=>{
     const { body } = req;
-    console.log(req);
     const { pagSiguiente, cantPorPag }= body;
     RouterRespuestas(
                     async ()=> await producto.listar(pagSiguiente, cantPorPag),
@@ -25,6 +24,14 @@ router.put("/editar",(req, res)=>{
     const { nombreProducto,valorProducto,cantidadProducto,Estado_idEstado,Familia_idFamilia,precioVentaProducto,idProducto,codigoBarraProducto }= body;
     RouterRespuestas(
                     async ()=> await producto.editar(nombreProducto,valorProducto,cantidadProducto,Estado_idEstado,Familia_idFamilia,precioVentaProducto,idProducto,codigoBarraProducto),
+                    res
+                    );
+});
+router.delete("/eliminar",(req, res)=>{
+    const { body } = req;
+    const { id }= body;
+    RouterRespuestas(
+                    async ()=> await producto.eliminar(id),
                     res
                     );
 });

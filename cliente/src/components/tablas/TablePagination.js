@@ -3,7 +3,7 @@ import NumeroPaginas from "./NumeroPaginas";
 
 const TablePagination = ({head,mostrarDatos,data,setCantPorPag,setPagSiguiente}) => {
     const [registros, setRegistros] = useState([]);
-    const [paginaActual, setPaginaActual] = useState();
+    const [paginaActual, setPaginaActual] = useState(1);
     const [paginaClick, setPaginaClick] = useState(1);
     const [totalPaginas, setTotalPaginas] = useState();
     const [totalRegistros, setTotalRegistros] = useState();
@@ -13,6 +13,7 @@ const TablePagination = ({head,mostrarDatos,data,setCantPorPag,setPagSiguiente})
         setCantPPag(event.target.value);
     }
     useEffect(()=>{
+        //console.log(data);
         if(data.cantidad){
             setTotalRegistros(data.cantidad[0].cantidad);
             setRegistros(data.datos);

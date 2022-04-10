@@ -9,7 +9,6 @@ import Boton from "../components/formulario/Boton";
 import Select from "../components/formulario/Select";
 import TablePagination from "../components/tablas/TablePagination";
 import InputReadOnly from "../components/formulario/InputReadOnly";
-import bootbox from 'bootbox';
 
 const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
     const [titulo, setTitulo] = useState();
@@ -34,11 +33,13 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
         setProductos(resultSet.data);
     }
     const eliminarProducto = async (id)=>{
-        const resultSet = await axios.post('/productos/eliminar', {id});
+        const resultSet = await axios.delete('/productos/eliminar', {id});
         setRespuestaConsulta(
             <div className="alert alert-danger" role="alert">
-                Producto Eliminado Correscamente
+                Producto <b>Eliminado</b> Correscamente
+                <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>);
+        listarProductos();
     }
     useEffect(()=>{
         listarProductos();
@@ -102,7 +103,6 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                 }
                             }
                             onChange = {(name, value, { props }) => {
-                                console.log("asd");
                                 props.handleFormChange(name, value); // call some method from parent 
                             }}
                             onSubmit={async (values,{resetForm,submitForm})=>{
@@ -131,6 +131,7 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                             setRespuestaConsulta(
                                                 <div className="alert alert-danger" role="alert">
                                                     Error : {error}
+                                                    <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                                 </div>);
                                         }
                                     }) 
@@ -234,11 +235,8 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                                 </button>
                                                 <button type="button" className="btn btn-danger" onClick={
                                                     ()=>{
-                                                        $(document).ready(function () {
-                                                            bootbox.confirm("Desea eliminar este producto? "+value.nombreProducto, function(result){ 
-                                                                if(result) eliminarProducto(value.idProducto);
-                                                            });
-                                                        });
+                                                        var resp = window.confirm(`Desea eliminar este producto? ${value.nombreProducto}`);
+                                                        if(resp) eliminarProducto(value.idProducto);
                                                     }
                                                 }>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash-fill" viewBox="0 0 16 16">

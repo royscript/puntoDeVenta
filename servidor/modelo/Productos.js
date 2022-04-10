@@ -10,7 +10,6 @@ class Productos extends mysql{
             datos : await this.consulta("SELECT * FROM producto "+this.paginador(pagSiguiente, cantPorPag)),
             cantidad : await this.consulta("SELECT count(idProducto) as cantidad FROM producto ")
         }
-        console.log(resp);
         return resp;
     }
     insertar(nombreProducto,valorProducto,cantidadProducto,Estado_idEstado,Familia_idFamilia,precioVentaProducto,codigoBarraProducto){
@@ -32,6 +31,11 @@ class Productos extends mysql{
                                 +",codigoBarraProducto= ? "
                     +" WHERE idProducto = ? ";
         return this.consulta(sql,[nombreProducto,valorProducto,cantidadProducto,Estado_idEstado,Familia_idFamilia,precioVentaProducto,codigoBarraProducto,idProducto]);
+    }
+    async eliminar(idProducto){
+        const sql = "DELETE FROM `producto` WHERE `producto`.`idProducto` = ? ";
+        var resp = await this.consulta(sql,[idProducto]);
+        return resp;
     }
 }
 module.exports =  Productos;
