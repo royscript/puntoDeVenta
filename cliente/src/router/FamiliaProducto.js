@@ -57,12 +57,10 @@ const FamiliaProducto = ({children, logOut, conseguirPermisos, usuario})=>{
         //conseguirPermisos();
         //console.log(usuario);
         listarFamilia();
-
     },[])
     return(
         <>
         <NavBar usuario={usuario.nombreUsuario+" "+usuario.apellidoUsuario} logOut={logOut}/>
-
             <div className="container-fluid">
                 <div className="row">
                     <SidebarMenu seccion={"familia-producto"}/>

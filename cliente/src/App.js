@@ -148,7 +148,7 @@ function App() {
         )}
         <Route
           path="*"
-          element={<PaginaNoEncontrada/>}
+          element={<PaginaNoEncontrada sesion={sesion}/>}
         />
       </Routes>
     );
