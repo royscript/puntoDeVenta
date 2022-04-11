@@ -16,6 +16,9 @@ const corsOptions = require('./middleware/corsOptions');
 const Productos = require('./controlador/productos');
 const FamiliaProducto = require('./controlador/familia');
 const Estado = require('./controlador/estado');
+const Proveedor = require('./controlador/proveedor');
+const DocumentoCompra = require('./controlador/documentoCompra');
+const Compra = require('./controlador/compra');
 //----------------------------
 
 //--------MIDDLEWARE-----------
@@ -35,6 +38,9 @@ app.use('/api/permisos/', Permisos);
 app.use('/api/productos/', Productos);
 app.use('/api/familia-producto/', FamiliaProducto);
 app.use('/api/estado/', Estado);
+app.use('/api/proveedor/', Proveedor);
+app.use('/api/documento-compra/', DocumentoCompra);
+app.use('/api/compra/', Compra);
 
 
 //------SUBIR APP--------------

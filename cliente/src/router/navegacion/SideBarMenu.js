@@ -1,45 +1,51 @@
 import FeatherIcon from 'feather-icons-react';
 import { Link } from "react-router-dom";
-const SidebarMenu = ()=>{
+const SidebarMenu = ({seccion})=>{
     return(
         <nav id="sidebarMenu" className="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
             <div className="position-sticky pt-3">
                 <ul className="nav flex-column">
                 <li className="nav-item">
-                    <div className="nav-link active" aria-current="page" href="#">
-                    <FeatherIcon icon="home" />
-                    Home
-                    </div>
-                </li>
-                <li className="nav-item">
-                    <div className="nav-link" href="#">
-                    <FeatherIcon icon="file" />
-                    Orders
-                    </div>
-                </li>
-                <li className="nav-item">
-                    <Link to="/productos" className="nav-link">
-                        <FeatherIcon icon="shopping-cart" />
-                        Products
+                    <Link to="/home" className={seccion=='home'?"nav-link active":"nav-link"}>
+                        <FeatherIcon icon="home" />
+                        Home
                     </Link>
                 </li>
                 <li className="nav-item">
-                    <div className="nav-link" href="#">
-                    <FeatherIcon icon="users" />
-                    Customers
-                    </div>
+                    <Link to="/familia-producto" className={seccion=='familia-producto'?"nav-link active":"nav-link"}>
+                        <FeatherIcon icon="list" />
+                        Familia Producto
+                    </Link>
                 </li>
                 <li className="nav-item">
-                    <div className="nav-link" href="#">
-                    <FeatherIcon icon="bar-chart-2" />
-                    Reports
-                    </div>
+                    <Link to="/productos" className={seccion=='productos'?"nav-link active":"nav-link"}>
+                        <FeatherIcon icon="shopping-bag" />
+                        Productos
+                    </Link>
                 </li>
                 <li className="nav-item">
-                    <div className="nav-link" href="#">
-                    <FeatherIcon icon="layers" />
-                    Integrations
-                    </div>
+                    <Link to="/usuarios" className={seccion=='usuarios'?"nav-link active":"nav-link"}>
+                        <FeatherIcon icon="users" />
+                        Usuarios
+                    </Link>
+                </li>
+                <li className="nav-item">
+                    <Link to="/proveedor" className={seccion=='proveedor'?"nav-link active":"nav-link"}>
+                        <FeatherIcon icon="briefcase" />
+                        Proveedor
+                    </Link>
+                </li>
+                <li className="nav-item">
+                    <Link to="/documento-compra" className={seccion=='documento-compra'?"nav-link active":"nav-link"}>
+                        <FeatherIcon icon="archive" />
+                        Documento de Compra
+                    </Link>
+                </li>
+                <li className="nav-item">
+                    <Link to="/compra" className={seccion=='compra'?"nav-link active":"nav-link"}>
+                        <FeatherIcon icon="book-open" />
+                        Compras
+                    </Link>
                 </li>
                 </ul>
 

@@ -5,10 +5,17 @@ class Productos extends mysql{
         this.usuariosOnline = [];
     }
 
-    async listar(pagSiguiente, cantPorPag){
+    async listar(pagSiguiente, cantPorPag, search){
+        var where = ''; 
+        var parametrosBuscar = [];
+        if(search){
+            parametrosBuscar = [search,'%'+search+'%'];
+            where = ` WHERE codigoBarraProducto LIKE ? OR nombreProducto LIKE ? `;
+            pagSiguiente = 1;//Cuando se realiza una busqueda comienza con la pagina 1
+        }
         let resp = {
-            datos : await this.consulta("SELECT * FROM producto "+this.paginador(pagSiguiente, cantPorPag)),
-            cantidad : await this.consulta("SELECT count(idProducto) as cantidad FROM producto ")
+            datos : await this.consulta("SELECT * FROM producto "+where+" "+this.paginador(pagSiguiente, cantPorPag),parametrosBuscar),
+            cantidad : await this.consulta("SELECT count(idProducto) as cantidad FROM producto "+where+" ",parametrosBuscar)
         }
         return resp;
     }
@@ -34,6 +41,7 @@ class Productos extends mysql{
     }
     async eliminar(idProducto){
         const sql = "DELETE FROM `producto` WHERE `producto`.`idProducto` = ? ";
+        //console.log(sql, idProducto);
         var resp = await this.consulta(sql,[idProducto]);
         return resp;
     }

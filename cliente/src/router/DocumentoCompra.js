@@ -3,30 +3,24 @@ import HeaderContainer from "./navegacion/HeaderContainer";
 import NavBar from "./navegacion/Navbar";
 import SidebarMenu from "./navegacion/SideBarMenu";
 import axios from "../api/axios";
-import { Formik, Form, useFormikContext } from "formik";
+import { Formik, Form } from "formik";
 import Input from "../components/formulario/Input";
 import Boton from "../components/formulario/Boton";
-import Select from "../components/formulario/Select";
 import TablePagination from "../components/tablas/TablePagination";
 import InputReadOnly from "../components/formulario/InputReadOnly";
-import AutoNumeric from 'autonumeric';
-import $ from 'jquery'; 
-import formatoDinero from "../funciones/formatoDinero";
 
-const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
+const DocumentoCompra = ({children, logOut, conseguirPermisos, usuario})=>{
     const [titulo, setTitulo] = useState();
-    const [familiaProducto, setFamiliaProducto] = useState([]);
-    const [estado, setEstado] = useState([]);
     const [respuestaConsulta, setRespuestaConsulta] = useState();
-    const [productos, setProductos] = useState([]);
+    const [documentoDeCompra, setDocumentoDeCompra] = useState([]);
     const [valoresFormulario, setValoresFormulario] = useState(null);
     const [botonPresionado,setBotonPresionado] = useState(null);
     const [pagSiguiente, setPagSiguiente] = useState(1);
     const [cantPorPag, setCantPorPag] = useState(5);
-    const listarProductos = async (search)=>{
+    const listarDocumentoDeCompra = async (search)=>{
         try {
-            const resultSet = await axios.post('/productos/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search});
-            setProductos(resultSet.data);
+            const resultSet = await axios.post('/documento-compra/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search});
+            setDocumentoDeCompra(resultSet.data);
         } catch (error) {
             setRespuestaConsulta(
                 <div className="alert alert-danger" role="alert">
@@ -36,23 +30,15 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
         }
         
     }
-    const listarFamiliaProducto = async ()=>{
-        const resultSet = await axios.get('/familia-producto/listar');
-        setFamiliaProducto(resultSet.data);
-    }
-    const listarEstado = async ()=>{
-        const resultSet = await axios.get('/estado/listar');
-        setEstado(resultSet.data);
-    }
-    const eliminarProducto = async (id)=>{
+    const eliminarDocumentoDeCompra = async (id)=>{
         try {
-            const resultSet = await axios.post('/productos/eliminar', {id});
+            const resultSet = await axios.post('/documento-compra/eliminar', {id});
             setRespuestaConsulta(
                 <div className="alert alert-danger" role="alert">
                     Producto <b>Eliminado</b> Correscamente
                     <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>);
-            listarProductos();
+            listarDocumentoDeCompra();
         } catch (error) {
             setRespuestaConsulta(
                 <div className="alert alert-danger" role="alert">
@@ -62,20 +48,14 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
         }
         
     }
-    const buscarEstado =(idEstado) =>{
-        if(estado.length==0) return idEstado;
-        return estado.find((e)=>e.idEstado==idEstado).nombreEstado;
-    }
     useEffect(()=>{
-        listarProductos();
+        listarDocumentoDeCompra();
     },[pagSiguiente,cantPorPag])
     useEffect(()=>{
-        setTitulo("Productos");
+        setTitulo("Documento de Compra");
         //conseguirPermisos();
         //console.log(usuario);
-        listarProductos();
-        listarEstado();
-        listarFamiliaProducto();
+        listarDocumentoDeCompra();
 
     },[])
     return(
@@ -84,46 +64,20 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
 
             <div className="container-fluid">
                 <div className="row">
-                    <SidebarMenu seccion={"productos"}/>
+                    <SidebarMenu seccion={"documento-compra"}/>
                     <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                         <HeaderContainer titulo={titulo}/>
                         {children}
                         <Formik
-                            initialValues={valoresFormulario || {idProducto : '', nombreProducto : '', valorProducto : '', cantidadProducto : '', Estado_idEstado : '', Familia_idFamilia : '', precioVentaProducto : '', codigoBarraProducto : ''}}
+                            initialValues={valoresFormulario || {idDocumentoCompra : '', nombreDocumentoCompra : ''}}
                             enableReinitialize
                             validate={
                                 (values) => {
                                     const errors = {}
-                                    if(!values.nombreProducto) {
-                                        errors.nombreProducto = 'Requerido'
-                                    } else if (values.nombreProducto.length < 5) {
-                                        errors.nombreProducto = 'Ingresa el Nombre del Producto'
-                                    }
-                                    if(!values.valorProducto) {
-                                        errors.valorProducto = 'Requerido'
-                                    } else if (values.valorProducto.length < 2) {
-                                        errors.valorProducto = 'Ingresa el valor del producto'
-                                    }
-                                    if(!values.cantidadProducto) {
-                                        errors.cantidadProducto = 'Requerido'
-                                    } else if (values.cantidadProducto.length < 1) {
-                                        errors.cantidadProducto = 'Ingresa la cantidad de productos'
-                                    }
-                                    if(!values.precioVentaProducto) {
-                                        errors.precioVentaProducto = 'Requerido'
-                                    } else if (values.precioVentaProducto.length < 1) {
-                                        errors.precioVentaProducto = 'Ingresa el precio de venta'
-                                    }
-                                    if(!values.Estado_idEstado) {
-                                        errors.Estado_idEstado = 'Requerido'
-                                    }
-                                    if(!values.Familia_idFamilia){
-                                        errors.Familia_idFamilia = 'Requerido'
-                                    }
-                                    if(!values.codigoBarraProducto){
-                                        errors.codigoBarraProducto = 'Requerido'
-                                    }else if(values.codigoBarraProducto.length<1){
-                                        errors.codigoBarraProducto = 'Ingrese el codigo de barras';
+                                    if(!values.nombreDocumentoCompra) {
+                                        errors.nombreDocumentoCompra = 'Requerido'
+                                    } else if (values.nombreDocumentoCompra.length < 5) {
+                                        errors.nombreDocumentoCompra = 'Ingresa el Nombre del documento de compra'
                                     }
                                     return errors
                                 }
@@ -133,18 +87,12 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                             }}
                             onSubmit={async (values,{resetForm,submitForm})=>{
                                 if(botonPresionado=="Guardar"){
-                                    axios.put('/productos/insertar', { nombreProducto : values.nombreProducto, 
-                                                                        valorProducto : values.valorProducto, 
-                                                                        cantidadProducto : values.cantidadProducto, 
-                                                                        Estado_idEstado : values.Estado_idEstado,
-                                                                        Familia_idFamilia : values.Familia_idFamilia,
-                                                                        precioVentaProducto : values.precioVentaProducto,
-                                                                        codigoBarraProducto : values.codigoBarraProducto, })
+                                    axios.put('/documento-compra/insertar', { nombreDocumentoCompra : values.nombreDocumentoCompra })
                                         .then(res => {
                                             if(res.status===200){
                                                 resetForm({values: ''});
                                                 setValoresFormulario(null);
-                                                listarProductos();
+                                                listarDocumentoDeCompra();
                                                 setRespuestaConsulta(
                                                     <div className="alert alert-success" role="alert">
                                                         Datos Ingresados Correctamente
@@ -161,19 +109,13 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                         }
                                     }) 
                                 }else{
-                                    axios.put('/productos/editar', { nombreProducto : values.nombreProducto, 
-                                        valorProducto : values.valorProducto, 
-                                        cantidadProducto : values.cantidadProducto, 
-                                        Estado_idEstado : values.Estado_idEstado,
-                                        Familia_idFamilia : values.Familia_idFamilia,
-                                        precioVentaProducto : values.precioVentaProducto,
-                                        codigoBarraProducto : values.codigoBarraProducto,
-                                        idProducto : values.idProducto })
+                                    axios.put('/documento-compra/editar', { nombreDocumentoCompra : values.nombreDocumentoCompra,
+                                        idDocumentoCompra : values.idDocumentoCompra })
                                     .then(res => {
                                         if(res.status===200){
                                             resetForm({values: ''});
                                             setValoresFormulario(null);
-                                            listarProductos();
+                                            listarDocumentoDeCompra();
                                             setRespuestaConsulta(
                                                 <div className="alert alert-warning" role="alert">
                                                     Datos <b>modificados</b> Correctamente
@@ -204,21 +146,8 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                     <div className="accordion-body">
                                         <div className="card" style={{"width": "100%"}}>
                                             <div className="card-body">
-                                                <InputReadOnly name="idProducto" label="Id Producto"/>
-                                                <Input name="codigoBarraProducto" label="Codigo de Barras Producto" type="text"/>
-                                                <Input name="nombreProducto" label="Nombre del producto" type="text"/>
-                                                <Input name="valorProducto" label="Valor del producto" type="number"/>
-                                                <Input name="cantidadProducto" label="Cantidad del producto" type="number"/>
-                                                <Input name="precioVentaProducto" label="Precio de venta del producto" type="number"/>
-                                                <Select name="Estado_idEstado" label="Estado del Producto">
-                                                    <option>Seleccione</option>
-                                                    {estado.map((value,key)=><option key={key+'-estado'} value={value.idEstado}>{value.nombreEstado}</option>)}
-                                                </Select>
-                                                
-                                                <Select name="Familia_idFamilia" label="Familia del Producto">
-                                                    <option>Seleccione</option>
-                                                    {familiaProducto.map((value,key)=><option key={key+'-familiaProducto'} value={value.idFamilia}>{value.nombreFamilia}</option>)}
-                                                </Select>
+                                                <InputReadOnly name="idDocumentoCompra" label="Id Documento de Compra"/>
+                                                <Input name="nombreDocumentoCompra" label="Nombre del documento de compra" type="text"/>
                                             </div>
                                             <div className="card-footer">
                                                 <div className="row">
@@ -241,28 +170,16 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                 <TablePagination
                                 head={
                                     <tr>
-                                        <th>Codigo</th>
-                                        <th>Producto</th>
-                                        <th>Valor</th>
-                                        <th>Cantidad</th>
-                                        <th>Precio Venta</th>
-                                        <th>Estado</th>
+                                        <th>#</th>
+                                        <th>Nombre documento de compra</th>
                                         <th>Accion</th>
                                     </tr>
                                 }
                                 mostrarDatos={
                                     (value,index)=>
                                     <tr key={index+'fila'}>
-                                        <td>{value.codigoBarraProducto}</td>
-                                        <td>{value.nombreProducto}</td>
-                                        <td>$ {formatoDinero(value.valorProducto)}</td>
-                                        <td>{formatoDinero(value.cantidadProducto)}</td>
-                                        <td>$ {formatoDinero(value.precioVentaProducto)}</td>
-                                        <td>
-                                            <span className={value.Estado_idEstado==1?"badge bg-success":"badge bg-danger"}>
-                                                {buscarEstado(value.Estado_idEstado)}
-                                            </span>
-                                        </td>
+                                        <td>{value.idDocumentoCompra}</td>
+                                        <td>{value.nombreDocumentoCompra}</td>
                                         <td>
                                             <div className="btn-group" role="group">
                                                 <button type="button" className="btn btn-warning" onClick={
@@ -276,8 +193,8 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                                 </button>
                                                 <button type="button" className="btn btn-danger" onClick={
                                                     ()=>{
-                                                        var resp = window.confirm(`Desea eliminar este producto? ${value.nombreProducto}`);
-                                                        if(resp) eliminarProducto(value.idProducto);
+                                                        var resp = window.confirm(`Desea eliminar este documento de compra? ${value.nombreDocumentoCompra}`);
+                                                        if(resp) eliminarDocumentoDeCompra(value.idDocumentoCompra);
                                                     }
                                                 }>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash-fill" viewBox="0 0 16 16">
@@ -288,11 +205,11 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                         </td>
                                     </tr>
                                 }
-                                data={productos}
+                                data={documentoDeCompra}
                                 setCantPorPag={setCantPorPag}
                                 setPagSiguiente={setPagSiguiente}
-                                funcionDeDatos={listarProductos}
-                                placeHolderSearch="Buscar por Codigo de Barra y nombres de productos"
+                                funcionDeDatos={listarDocumentoDeCompra}
+                                placeHolderSearch="Buscar por nombre de familia"
                             />
                             </Form>
                         </Formik>
@@ -305,4 +222,4 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
         </>
     )
 }
-export default Productos;
+export default DocumentoCompra;

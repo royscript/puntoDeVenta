@@ -1,35 +1,36 @@
 const router = require('express').Router();
-const Familia = require('../modelo/FamiliaProducto');
+const Proveedor = require('../modelo/Proveedor');
 const RouterRespuestas = require('../utils/RouterRespuestas');
-const familia = new Familia();
+const proveedor = new Proveedor();
 
 router.get("/listar",(req, res)=>{
     RouterRespuestas(
-                    async ()=> await familia.listar(),
+                    async ()=> await proveedor.listar(),
                     res
                     );
 });
+
 router.post("/listar",(req, res)=>{
     const { body } = req;
     const { pagSiguiente, cantPorPag, search }= body;
     RouterRespuestas(
-                    async ()=> await familia.listarConParametros(pagSiguiente, cantPorPag, search),
+                    async ()=> await proveedor.listarConFiltro(pagSiguiente, cantPorPag, search),
                     res
                     );
 });
 router.put("/insertar",(req, res)=>{
     const { body } = req;
-    const { nombreFamilia }= body;
+    const { razonSocialProveedor, contactoProveedor,direccionProveedor, telefonoProveedor,rutProveedor }= body;
     RouterRespuestas(
-                    async ()=> await familia.insertar(nombreFamilia),
+                    async ()=> await proveedor.insertar(razonSocialProveedor, contactoProveedor,direccionProveedor, telefonoProveedor,rutProveedor),
                     res
                     );
 });
 router.put("/editar",(req, res)=>{
     const { body } = req;
-    const { nombreFamilia,idFamilia }= body;
+    const { razonSocialProveedor, contactoProveedor,direccionProveedor, telefonoProveedor,rutProveedor,idProveedor }= body;
     RouterRespuestas(
-                    async ()=> await familia.editar(nombreFamilia,idFamilia),
+                    async ()=> await proveedor.editar(razonSocialProveedor, contactoProveedor,direccionProveedor, telefonoProveedor,rutProveedor,idProveedor),
                     res
                     );
 });
@@ -37,7 +38,7 @@ router.post("/eliminar",(req, res)=>{
     const { body } = req;
     const { id }= body;
     RouterRespuestas(
-                    async ()=> await familia.eliminar(id),
+                    async ()=> await proveedor.eliminar(id),
                     res
                     );
 });

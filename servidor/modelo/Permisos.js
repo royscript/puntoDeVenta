@@ -12,5 +12,8 @@ class Permisos extends mysql{
                                 +"ON(M.`permiso_idPermiso`=P.idPermiso) "
                                 +"WHERE P.idPermiso = ?",[idPermiso]);
     }
+    listar(){
+        return this.consulta("SELECT * FROM  `permiso`");
+    }
 }
 module.exports =  Permisos;

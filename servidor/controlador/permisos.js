@@ -11,4 +11,10 @@ router.post("/listar",(req, res)=>{
                     res
                     );
 });
+router.get("/listar",(req, res)=>{
+    RouterRespuestas(
+                    async ()=> await permisos.listar(),
+                    res
+                    );
+});
 module.exports = router;

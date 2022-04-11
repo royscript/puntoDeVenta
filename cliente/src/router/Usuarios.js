@@ -3,30 +3,26 @@ import HeaderContainer from "./navegacion/HeaderContainer";
 import NavBar from "./navegacion/Navbar";
 import SidebarMenu from "./navegacion/SideBarMenu";
 import axios from "../api/axios";
-import { Formik, Form, useFormikContext } from "formik";
+import { Formik, Form } from "formik";
 import Input from "../components/formulario/Input";
 import Boton from "../components/formulario/Boton";
 import Select from "../components/formulario/Select";
 import TablePagination from "../components/tablas/TablePagination";
 import InputReadOnly from "../components/formulario/InputReadOnly";
-import AutoNumeric from 'autonumeric';
-import $ from 'jquery'; 
-import formatoDinero from "../funciones/formatoDinero";
 
-const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
+const Usuarios = ({children, logOut, conseguirPermisos, usuario})=>{
     const [titulo, setTitulo] = useState();
-    const [familiaProducto, setFamiliaProducto] = useState([]);
-    const [estado, setEstado] = useState([]);
     const [respuestaConsulta, setRespuestaConsulta] = useState();
-    const [productos, setProductos] = useState([]);
+    const [usuarios, setUsuarios] = useState([]);
     const [valoresFormulario, setValoresFormulario] = useState(null);
     const [botonPresionado,setBotonPresionado] = useState(null);
     const [pagSiguiente, setPagSiguiente] = useState(1);
     const [cantPorPag, setCantPorPag] = useState(5);
-    const listarProductos = async (search)=>{
+    const [permisos, setPermisos] = useState([]);
+    const listarUsuarios = async (search)=>{
         try {
-            const resultSet = await axios.post('/productos/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search});
-            setProductos(resultSet.data);
+            const resultSet = await axios.post('/usuario/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search});
+            setUsuarios(resultSet.data);
         } catch (error) {
             setRespuestaConsulta(
                 <div className="alert alert-danger" role="alert">
@@ -36,23 +32,15 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
         }
         
     }
-    const listarFamiliaProducto = async ()=>{
-        const resultSet = await axios.get('/familia-producto/listar');
-        setFamiliaProducto(resultSet.data);
-    }
-    const listarEstado = async ()=>{
-        const resultSet = await axios.get('/estado/listar');
-        setEstado(resultSet.data);
-    }
-    const eliminarProducto = async (id)=>{
+    const eliminarUsuario = async (id)=>{
         try {
-            const resultSet = await axios.post('/productos/eliminar', {id});
+            const resultSet = await axios.post('/usuario/eliminar', {id});
             setRespuestaConsulta(
                 <div className="alert alert-danger" role="alert">
                     Producto <b>Eliminado</b> Correscamente
                     <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>);
-            listarProductos();
+            listarUsuarios();
         } catch (error) {
             setRespuestaConsulta(
                 <div className="alert alert-danger" role="alert">
@@ -62,20 +50,21 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
         }
         
     }
-    const buscarEstado =(idEstado) =>{
-        if(estado.length==0) return idEstado;
-        return estado.find((e)=>e.idEstado==idEstado).nombreEstado;
+    const listarPermiso = async ()=>{
+        const resultSet = await axios.get('/permisos/listar');
+        setPermisos(resultSet.data);
+    }
+    const buscarPermiso =(idPermiso) =>{
+        if(permisos.length==0) return idPermiso;
+        return permisos.find((e)=>e.idPermiso==idPermiso).nombrePermiso;
     }
     useEffect(()=>{
-        listarProductos();
+        listarUsuarios();
     },[pagSiguiente,cantPorPag])
     useEffect(()=>{
-        setTitulo("Productos");
-        //conseguirPermisos();
-        //console.log(usuario);
-        listarProductos();
-        listarEstado();
-        listarFamiliaProducto();
+        setTitulo("Usuarios");
+        listarPermiso();
+        listarUsuarios();
 
     },[])
     return(
@@ -84,47 +73,55 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
 
             <div className="container-fluid">
                 <div className="row">
-                    <SidebarMenu seccion={"productos"}/>
+                    <SidebarMenu seccion={"usuarios"}/>
                     <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                         <HeaderContainer titulo={titulo}/>
                         {children}
                         <Formik
-                            initialValues={valoresFormulario || {idProducto : '', nombreProducto : '', valorProducto : '', cantidadProducto : '', Estado_idEstado : '', Familia_idFamilia : '', precioVentaProducto : '', codigoBarraProducto : ''}}
+                            initialValues={valoresFormulario || {idUsuario : '', nombreUsuario: '' , apellidoUsuario: '' , emailUsuario: '' , rutUsuario: '' , contrasenaUsuario: '' , direccionUsuario: '' , telefonoUsuario: '' , Permiso_idPermiso: ''}}
                             enableReinitialize
                             validate={
                                 (values) => {
                                     const errors = {}
-                                    if(!values.nombreProducto) {
-                                        errors.nombreProducto = 'Requerido'
-                                    } else if (values.nombreProducto.length < 5) {
-                                        errors.nombreProducto = 'Ingresa el Nombre del Producto'
+                                    if(!values.nombreUsuario) {
+                                        errors.nombreUsuario = 'Requerido'
+                                    } else if (values.nombreUsuario.length < 5) {
+                                        errors.nombreUsuario = 'Ingresa el Nombre de Usuario'
                                     }
-                                    if(!values.valorProducto) {
-                                        errors.valorProducto = 'Requerido'
-                                    } else if (values.valorProducto.length < 2) {
-                                        errors.valorProducto = 'Ingresa el valor del producto'
+                                    if(!values.apellidoUsuario) {
+                                        errors.apellidoUsuario = 'Requerido'
+                                    } else if (values.apellidoUsuario.length < 5) {
+                                        errors.apellidoUsuario = 'Ingresa los apellidos del usuario '
                                     }
-                                    if(!values.cantidadProducto) {
-                                        errors.cantidadProducto = 'Requerido'
-                                    } else if (values.cantidadProducto.length < 1) {
-                                        errors.cantidadProducto = 'Ingresa la cantidad de productos'
+                                    if(!values.emailUsuario) {
+                                        errors.emailUsuario = 'Requerido'
+                                    } else if (values.emailUsuario.length < 5) {
+                                        errors.emailUsuario = 'Ingresa el email del usuario'
                                     }
-                                    if(!values.precioVentaProducto) {
-                                        errors.precioVentaProducto = 'Requerido'
-                                    } else if (values.precioVentaProducto.length < 1) {
-                                        errors.precioVentaProducto = 'Ingresa el precio de venta'
+                                    if(!values.rutUsuario) {
+                                        errors.rutUsuario = 'Requerido'
+                                    } else if (values.rutUsuario.length < 5) {
+                                        errors.rutUsuario = 'Ingresa el rut del usuario'
                                     }
-                                    if(!values.Estado_idEstado) {
-                                        errors.Estado_idEstado = 'Requerido'
+                                    if(!values.contrasenaUsuario) {
+                                        errors.contrasenaUsuario = 'Requerido'
+                                    } else if (values.contrasenaUsuario.length < 5) {
+                                        errors.contrasenaUsuario = 'Ingresa la contraseña del usuario '
                                     }
-                                    if(!values.Familia_idFamilia){
-                                        errors.Familia_idFamilia = 'Requerido'
+                                    if(!values.direccionUsuario) {
+                                        errors.direccionUsuario = 'Requerido'
+                                    } else if (values.direccionUsuario.length < 5) {
+                                        errors.direccionUsuario = 'Ingresa la direccion del usuario '
                                     }
-                                    if(!values.codigoBarraProducto){
-                                        errors.codigoBarraProducto = 'Requerido'
-                                    }else if(values.codigoBarraProducto.length<1){
-                                        errors.codigoBarraProducto = 'Ingrese el codigo de barras';
+                                    if(!values.telefonoUsuario) {
+                                        errors.telefonoUsuario = 'Requerido'
+                                    } else if (values.telefonoUsuario.length < 5) {
+                                        errors.telefonoUsuario = 'Ingresa el telefono del usuario'
                                     }
+                                    if(!values.Permiso_idPermiso) {
+                                        errors.Permiso_idPermiso = 'Requerido'
+                                    }
+
                                     return errors
                                 }
                             }
@@ -133,18 +130,12 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                             }}
                             onSubmit={async (values,{resetForm,submitForm})=>{
                                 if(botonPresionado=="Guardar"){
-                                    axios.put('/productos/insertar', { nombreProducto : values.nombreProducto, 
-                                                                        valorProducto : values.valorProducto, 
-                                                                        cantidadProducto : values.cantidadProducto, 
-                                                                        Estado_idEstado : values.Estado_idEstado,
-                                                                        Familia_idFamilia : values.Familia_idFamilia,
-                                                                        precioVentaProducto : values.precioVentaProducto,
-                                                                        codigoBarraProducto : values.codigoBarraProducto, })
+                                    axios.put('/usuario/insertar', { nombreUsuario: values.nombreUsuario , apellidoUsuario: values.apellidoUsuario , emailUsuario: values.emailUsuario , rutUsuario: values.rutUsuario , contrasenaUsuario: values.contrasenaUsuario , direccionUsuario: values.direccionUsuario , telefonoUsuario: values.telefonoUsuario , Permiso_idPermiso: values.Permiso_idPermiso })
                                         .then(res => {
                                             if(res.status===200){
                                                 resetForm({values: ''});
                                                 setValoresFormulario(null);
-                                                listarProductos();
+                                                listarUsuarios();
                                                 setRespuestaConsulta(
                                                     <div className="alert alert-success" role="alert">
                                                         Datos Ingresados Correctamente
@@ -161,19 +152,12 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                         }
                                     }) 
                                 }else{
-                                    axios.put('/productos/editar', { nombreProducto : values.nombreProducto, 
-                                        valorProducto : values.valorProducto, 
-                                        cantidadProducto : values.cantidadProducto, 
-                                        Estado_idEstado : values.Estado_idEstado,
-                                        Familia_idFamilia : values.Familia_idFamilia,
-                                        precioVentaProducto : values.precioVentaProducto,
-                                        codigoBarraProducto : values.codigoBarraProducto,
-                                        idProducto : values.idProducto })
+                                    axios.put('/usuario/editar', { idUsuario : values.idUsuario, nombreUsuario: values.nombreUsuario , apellidoUsuario: values.apellidoUsuario , emailUsuario: values.emailUsuario , rutUsuario: values.rutUsuario , contrasenaUsuario: values.contrasenaUsuario , direccionUsuario: values.direccionUsuario , telefonoUsuario: values.telefonoUsuario , Permiso_idPermiso: values.Permiso_idPermiso })
                                     .then(res => {
                                         if(res.status===200){
                                             resetForm({values: ''});
                                             setValoresFormulario(null);
-                                            listarProductos();
+                                            listarUsuarios();
                                             setRespuestaConsulta(
                                                 <div className="alert alert-warning" role="alert">
                                                     Datos <b>modificados</b> Correctamente
@@ -204,20 +188,17 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                     <div className="accordion-body">
                                         <div className="card" style={{"width": "100%"}}>
                                             <div className="card-body">
-                                                <InputReadOnly name="idProducto" label="Id Producto"/>
-                                                <Input name="codigoBarraProducto" label="Codigo de Barras Producto" type="text"/>
-                                                <Input name="nombreProducto" label="Nombre del producto" type="text"/>
-                                                <Input name="valorProducto" label="Valor del producto" type="number"/>
-                                                <Input name="cantidadProducto" label="Cantidad del producto" type="number"/>
-                                                <Input name="precioVentaProducto" label="Precio de venta del producto" type="number"/>
-                                                <Select name="Estado_idEstado" label="Estado del Producto">
+                                                <InputReadOnly name="idUsuario" label="Id del Usuario"/>
+                                                <Input name="nombreUsuario" label="Nombres del Usuario" type="text"/>
+                                                <Input name="apellidoUsuario" label="Apellidos del Usuario" type="text"/>
+                                                <Input name="emailUsuario" label="E-mail del Usuario" type="text"/>
+                                                <Input name="rutUsuario" label="Rut del Usuario" type="text"/>
+                                                <Input name="contrasenaUsuario" label="Contraseña del Usuario" type="text"/>
+                                                <Input name="direccionUsuario" label="Direccion del Usuario" type="text"/>
+                                                <Input name="telefonoUsuario" label="Telefono del Usuario" type="text"/>
+                                                <Select name="Permiso_idPermiso" label="Permiso del Usuario">
                                                     <option>Seleccione</option>
-                                                    {estado.map((value,key)=><option key={key+'-estado'} value={value.idEstado}>{value.nombreEstado}</option>)}
-                                                </Select>
-                                                
-                                                <Select name="Familia_idFamilia" label="Familia del Producto">
-                                                    <option>Seleccione</option>
-                                                    {familiaProducto.map((value,key)=><option key={key+'-familiaProducto'} value={value.idFamilia}>{value.nombreFamilia}</option>)}
+                                                    {permisos.map((value,key)=><option key={key+'-permiso-del-usuario'} value={value.idPermiso}>{value.nombrePermiso}</option>)}
                                                 </Select>
                                             </div>
                                             <div className="card-footer">
@@ -241,28 +222,28 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                 <TablePagination
                                 head={
                                     <tr>
-                                        <th>Codigo</th>
-                                        <th>Producto</th>
-                                        <th>Valor</th>
-                                        <th>Cantidad</th>
-                                        <th>Precio Venta</th>
-                                        <th>Estado</th>
+                                        <th>#</th>
+                                        <th>Nombres</th>
+                                        <th>Email</th>
+                                        <th>Rut</th>
+                                        <th>Contraseña</th>
+                                        <th>Direccion</th>
+                                        <th>Telefono</th>
+                                        <th>Permiso</th>
                                         <th>Accion</th>
                                     </tr>
                                 }
                                 mostrarDatos={
                                     (value,index)=>
                                     <tr key={index+'fila'}>
-                                        <td>{value.codigoBarraProducto}</td>
-                                        <td>{value.nombreProducto}</td>
-                                        <td>$ {formatoDinero(value.valorProducto)}</td>
-                                        <td>{formatoDinero(value.cantidadProducto)}</td>
-                                        <td>$ {formatoDinero(value.precioVentaProducto)}</td>
-                                        <td>
-                                            <span className={value.Estado_idEstado==1?"badge bg-success":"badge bg-danger"}>
-                                                {buscarEstado(value.Estado_idEstado)}
-                                            </span>
-                                        </td>
+                                        <td>{value.idUsuario}</td>
+                                        <td>{value.nombreUsuario+" "+value.apellidoUsuario}</td>
+                                        <td>{value.emailUsuario}</td>
+                                        <td>{value.rutUsuario}</td>
+                                        <td>{value.contrasenaUsuario}</td>
+                                        <td>{value.direccionUsuario}</td>
+                                        <td>{value.telefonoUsuario}</td>
+                                        <td>{buscarPermiso(value.Permiso_idPermiso)}</td>
                                         <td>
                                             <div className="btn-group" role="group">
                                                 <button type="button" className="btn btn-warning" onClick={
@@ -276,8 +257,8 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                                 </button>
                                                 <button type="button" className="btn btn-danger" onClick={
                                                     ()=>{
-                                                        var resp = window.confirm(`Desea eliminar este producto? ${value.nombreProducto}`);
-                                                        if(resp) eliminarProducto(value.idProducto);
+                                                        var resp = window.confirm(`Desea eliminar este usuario? ${value.nombreUsuario}`);
+                                                        if(resp) eliminarUsuario(value.idUsuario);
                                                     }
                                                 }>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash-fill" viewBox="0 0 16 16">
@@ -288,11 +269,11 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                         </td>
                                     </tr>
                                 }
-                                data={productos}
+                                data={usuarios}
                                 setCantPorPag={setCantPorPag}
                                 setPagSiguiente={setPagSiguiente}
-                                funcionDeDatos={listarProductos}
-                                placeHolderSearch="Buscar por Codigo de Barra y nombres de productos"
+                                funcionDeDatos={listarUsuarios}
+                                placeHolderSearch="Buscar por nombres, apellidos o rut del usuario"
                             />
                             </Form>
                         </Formik>
@@ -305,4 +286,4 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
         </>
     )
 }
-export default Productos;
+export default Usuarios;

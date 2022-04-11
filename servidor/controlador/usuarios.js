@@ -9,4 +9,36 @@ router.get("/listar",(req, res)=>{
                     res
                     );
 });
+router.post("/listar",(req, res)=>{
+    const { body } = req;
+    const { pagSiguiente, cantPorPag, search }= body;
+    RouterRespuestas(
+                    async ()=> await usuario.listarConFiltro(pagSiguiente, cantPorPag, search),
+                    res
+                    );
+});
+router.put("/insertar",(req, res)=>{
+    const { body } = req;
+    const { nombreUsuario,apellidoUsuario,emailUsuario,rutUsuario,contrasenaUsuario,direccionUsuario,telefonoUsuario,Permiso_idPermiso }= body;
+    RouterRespuestas(
+                    async ()=> await usuario.insertar(nombreUsuario,apellidoUsuario,emailUsuario,rutUsuario,contrasenaUsuario,direccionUsuario,telefonoUsuario,Permiso_idPermiso),
+                    res
+                    );
+});
+router.put("/editar",(req, res)=>{
+    const { body } = req;
+    const { nombreUsuario,apellidoUsuario,emailUsuario,rutUsuario,contrasenaUsuario,direccionUsuario,telefonoUsuario,Permiso_idPermiso,idUsuario }= body;
+    RouterRespuestas(
+                    async ()=> await usuario.editar(nombreUsuario,apellidoUsuario,emailUsuario,rutUsuario,contrasenaUsuario,direccionUsuario,telefonoUsuario,Permiso_idPermiso,idUsuario),
+                    res
+                    );
+});
+router.post("/eliminar",(req, res)=>{
+    const { body } = req;
+    const { id }= body;
+    RouterRespuestas(
+                    async ()=> await usuario.eliminar(id),
+                    res
+                    );
+});
 module.exports = router;

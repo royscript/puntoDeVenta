@@ -1,11 +1,11 @@
 const router = require('express').Router();
-const Familia = require('../modelo/FamiliaProducto');
+const DocumentoCompra = require('../modelo/DocumentoCompra');
 const RouterRespuestas = require('../utils/RouterRespuestas');
-const familia = new Familia();
+const documentoCompra = new DocumentoCompra();
 
 router.get("/listar",(req, res)=>{
     RouterRespuestas(
-                    async ()=> await familia.listar(),
+                    async ()=> await documentoCompra.listar(),
                     res
                     );
 });
@@ -13,23 +13,23 @@ router.post("/listar",(req, res)=>{
     const { body } = req;
     const { pagSiguiente, cantPorPag, search }= body;
     RouterRespuestas(
-                    async ()=> await familia.listarConParametros(pagSiguiente, cantPorPag, search),
+                    async ()=> await documentoCompra.listarConParametros(pagSiguiente, cantPorPag, search),
                     res
                     );
 });
 router.put("/insertar",(req, res)=>{
     const { body } = req;
-    const { nombreFamilia }= body;
+    const { nombreDocumentoCompra }= body;
     RouterRespuestas(
-                    async ()=> await familia.insertar(nombreFamilia),
+                    async ()=> await documentoCompra.insertar(nombreDocumentoCompra),
                     res
                     );
 });
 router.put("/editar",(req, res)=>{
     const { body } = req;
-    const { nombreFamilia,idFamilia }= body;
+    const { nombreDocumentoCompra,idDocumentoCompra }= body;
     RouterRespuestas(
-                    async ()=> await familia.editar(nombreFamilia,idFamilia),
+                    async ()=> await documentoCompra.editar(nombreDocumentoCompra,idDocumentoCompra),
                     res
                     );
 });
@@ -37,7 +37,7 @@ router.post("/eliminar",(req, res)=>{
     const { body } = req;
     const { id }= body;
     RouterRespuestas(
-                    async ()=> await familia.eliminar(id),
+                    async ()=> await documentoCompra.eliminar(id),
                     res
                     );
 });

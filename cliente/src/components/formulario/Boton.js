@@ -1,7 +1,7 @@
 const Boton = ({label, type, ...props})=>{
     return(
         <div className="col text-center">
-            <button type={type} className="btn btn-primary" {...props}>{label}</button>
+            <button type={type} {...props}>{label}</button>
         </div>
     )
 }

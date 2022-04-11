@@ -5,9 +5,9 @@ const producto = new Productos();
 
 router.post("/listar",(req, res)=>{
     const { body } = req;
-    const { pagSiguiente, cantPorPag }= body;
+    const { pagSiguiente, cantPorPag, search }= body;
     RouterRespuestas(
-                    async ()=> await producto.listar(pagSiguiente, cantPorPag),
+                    async ()=> await producto.listar(pagSiguiente, cantPorPag, search),
                     res
                     );
 });
@@ -27,7 +27,7 @@ router.put("/editar",(req, res)=>{
                     res
                     );
 });
-router.delete("/eliminar",(req, res)=>{
+router.post("/eliminar",(req, res)=>{
     const { body } = req;
     const { id }= body;
     RouterRespuestas(
