@@ -19,6 +19,7 @@ const Estado = require('./controlador/estado');
 const Proveedor = require('./controlador/proveedor');
 const DocumentoCompra = require('./controlador/documentoCompra');
 const Compra = require('./controlador/compra');
+const DetalleCompra = require('./controlador/detalleCompra');
 //----------------------------
 
 //--------MIDDLEWARE-----------
@@ -41,6 +42,7 @@ app.use('/api/estado/', Estado);
 app.use('/api/proveedor/', Proveedor);
 app.use('/api/documento-compra/', DocumentoCompra);
 app.use('/api/compra/', Compra);
+app.use('/api/detalle-compra/',DetalleCompra);
 
 
 //------SUBIR APP--------------

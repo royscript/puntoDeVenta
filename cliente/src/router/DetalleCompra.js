@@ -11,9 +11,10 @@ import TablePagination from "../components/tablas/TablePagination";
 import InputReadOnly from "../components/formulario/InputReadOnly";
 import formatoDinero from "../funciones/formatoDinero";
 import FeatherIcon from 'feather-icons-react';
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
-const Compra = ({children, logOut, conseguirPermisos, usuario})=>{
+const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
+    let { idCompraOrigen } = useParams();//Capturamos el id de la compra
     const [titulo, setTitulo] = useState();
     const [respuestaConsulta, setRespuestaConsulta] = useState();
     const [compras, setCompra] = useState([]);
@@ -74,7 +75,8 @@ const Compra = ({children, logOut, conseguirPermisos, usuario})=>{
         listarCompras();
     },[pagSiguiente,cantPorPag])
     useEffect(()=>{
-        setTitulo("Compras");
+        console.log("idCompraOrigen : "+idCompraOrigen);
+        setTitulo("Compra / Detalle Compra");
         //conseguirPermisos();
         //console.log(usuario);
         listarProveedor();
@@ -209,6 +211,7 @@ const Compra = ({children, logOut, conseguirPermisos, usuario})=>{
                                                     <option>Seleccione</option>
                                                     {proveedor.map((value,key)=><option key={key+'-estado'} value={value.idProveedor}>{value.razonSocialProveedor}</option>)}
                                                 </Select>
+                                                
                                             </div>
                                             <div className="card-footer">
                                                 <div className="row">
@@ -266,11 +269,6 @@ const Compra = ({children, logOut, conseguirPermisos, usuario})=>{
                                                         <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                                                     </svg>
                                                 </button>
-                                                <Link to={"/detalle-compra/"+value.idCompra} className="btn btn-success">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-cart4" viewBox="0 0 16 16">
-                                                        <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l.5 2H5V5H3.14zM6 5v2h2V5H6zm3 0v2h2V5H9zm3 0v2h1.36l.5-2H12zm1.11 3H12v2h.61l.5-2zM11 8H9v2h2V8zM8 8H6v2h2V8zM5 8H3.89l.5 2H5V8zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
-                                                    </svg>
-                                                </Link>
                                                 <button type="button" className="btn btn-danger" onClick={
                                                     ()=>{
                                                         var resp = window.confirm(`Desea eliminar esta Compra ${value.numeroDocumentoCompra}`);
@@ -281,6 +279,10 @@ const Compra = ({children, logOut, conseguirPermisos, usuario})=>{
                                                         <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"/>
                                                     </svg>
                                                 </button>
+                                                <Link to="/detalle-compra">
+                                                    <FeatherIcon icon="shopping-car" />
+                                                    Detalle Compra
+                                                </Link>
                                             </div>
                                         </td>
                                     </tr>
@@ -302,4 +304,4 @@ const Compra = ({children, logOut, conseguirPermisos, usuario})=>{
         </>
     )
 }
-export default Compra;
+export default DetalleCompra;

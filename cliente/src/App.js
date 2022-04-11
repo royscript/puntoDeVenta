@@ -12,6 +12,7 @@ import Usuarios from './router/Usuarios';
 import Proveedor from './router/Proveedor';
 import DocumentoCompra from './router/DocumentoCompra';
 import Compra from './router/Compra';
+import DetalleCompra from './router/DetalleCompra';
 function App() {
     const [usuario, setUsuario] = useState();
     const [sesion, setSesion] = useState(null);
@@ -139,6 +140,11 @@ function App() {
            <Route 
            path="/compra" 
            element={<Compra logOut={logOut} conseguirPermisos={conseguirPermisos} usuario={usuario}/>}/>
+        )}
+        {sesion &&(
+           <Route 
+           path="/detalle-compra/:idCompraOrigen" 
+           element={<DetalleCompra logOut={logOut} conseguirPermisos={conseguirPermisos} usuario={usuario}/>}/>
         )}
         <Route
           path="*"
