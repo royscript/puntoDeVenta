@@ -11,6 +11,15 @@ router.post("/listar",(req, res)=>{
                     res
                     );
 });
+router.post("/buscar",(req, res)=>{
+    const { body } = req;
+    const { codigo }= body;
+    console.log(codigo);
+    RouterRespuestas(
+                    async ()=> await producto.buscar(codigo),
+                    res
+                    );
+});
 router.put("/insertar",(req, res)=>{
     const { body } = req;
     const { nombreProducto,valorProducto,cantidadProducto,Estado_idEstado,Familia_idFamilia,precioVentaProducto, codigoBarraProducto }= body;

@@ -4,7 +4,9 @@ class Productos extends mysql{
         super();
         this.usuariosOnline = [];
     }
-
+    async buscar(codigoBuscar){
+        return await this.consulta("SELECT * FROM producto WHERE idProducto LIKE ? OR codigoBarraProducto LIKE ?",[codigoBuscar, codigoBuscar]);
+    }
     async listar(pagSiguiente, cantPorPag, search){
         var where = ''; 
         var parametrosBuscar = [];

@@ -6,7 +6,6 @@ import axios from "../api/axios";
 import { Formik, Form } from "formik";
 import Input from "../components/formulario/Input";
 import Boton from "../components/formulario/Boton";
-import Select from "../components/formulario/Select";
 import TablePagination from "../components/tablas/TablePagination";
 import InputReadOnly from "../components/formulario/InputReadOnly";
 
@@ -85,7 +84,7 @@ const FamiliaProducto = ({children, logOut, conseguirPermisos, usuario})=>{
                                 props.handleFormChange(name, value); // call some method from parent 
                             }}
                             onSubmit={async (values,{resetForm,submitForm})=>{
-                                if(botonPresionado=="Guardar"){
+                                if(botonPresionado==="Guardar"){
                                     axios.put('/familia-producto/insertar', { nombreFamilia : values.nombreFamilia })
                                         .then(res => {
                                             if(res.status===200){

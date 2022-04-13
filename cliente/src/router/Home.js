@@ -2,7 +2,6 @@ import { useState } from "react";
 import HeaderContainer from "./navegacion/HeaderContainer";
 import NavBar from "./navegacion/Navbar";
 import SidebarMenu from "./navegacion/SideBarMenu";
-import axios from "../api/axios";
 
 const Home = ({children, logOut, conseguirPermisos, usuario})=>{
     const [titulo, setTitulo] = useState();

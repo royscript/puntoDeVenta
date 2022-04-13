@@ -1,0 +1,13 @@
+.caja body {
+    --table-width: 100%; /* Or any value, this will change dinamically */
+  }
+  .caja tbody {
+    display:block;
+    max-height:200px;
+    overflow-y:auto;
+  }
+  .caja thead,  .caja tbody,   .caja tr {
+    display:table;
+    width: var(--table-width);
+    table-layout:fixed;
+  }

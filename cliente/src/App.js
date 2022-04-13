@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router';
-import './App.css';
 import Login from './router/Login';
 import Home from './router/Home';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +12,7 @@ import Proveedor from './router/Proveedor';
 import DocumentoCompra from './router/DocumentoCompra';
 import Compra from './router/Compra';
 import DetalleCompra from './router/DetalleCompra';
+import Caja from './router/Caja';
 function App() {
     const [usuario, setUsuario] = useState();
     const [sesion, setSesion] = useState(null);
@@ -85,7 +85,7 @@ function App() {
       //conseguirPermisos(user.idPermiso);
     }
     useEffect(()=>{
-      if(sesion==true){
+      if(sesion===true){
         navigate("/home");
       }
     },[])
@@ -145,6 +145,11 @@ function App() {
            <Route 
            path="/detalle-compra/:idCompraOrigen" 
            element={<DetalleCompra logOut={logOut} conseguirPermisos={conseguirPermisos} usuario={usuario}/>}/>
+        )}
+        {sesion &&(
+           <Route 
+           path="/caja" 
+           element={<Caja logOut={logOut} usuario={usuario}/>}/>
         )}
         <Route
           path="*"

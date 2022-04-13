@@ -47,6 +47,12 @@ const SidebarMenu = ({seccion})=>{
                         Compras
                     </Link>
                 </li>
+                <li className="nav-item">
+                    <Link to="/caja" className={seccion=='caja'?"nav-link active":"nav-link"}>
+                        <FeatherIcon icon="shopping-cart" />
+                        Caja 
+                    </Link>
+                </li>
                 </ul>
 
                 <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
