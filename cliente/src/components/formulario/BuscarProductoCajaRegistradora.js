@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import formatoDinero from "../../funciones/formatoDinero";
 
 const BuscarProductoCajaRegistradora = ({buscarProducto,setProductoSeleccionado, productoSeleccionado, setTotal })=>{
     const [mensaje, setMensaje] = useState('Esperando el código de barras o interno');
@@ -19,8 +20,8 @@ const BuscarProductoCajaRegistradora = ({buscarProducto,setProductoSeleccionado,
     }    
     useEffect(()=>{
         setMensaje("Esperando el código de barras o interno");
-        setParametro();
-        setProducto([]);
+        setParametro("");
+        //setProducto([]);
     },[])
     
     const entregarProducto = (producto, cantidad)=>{
@@ -44,7 +45,7 @@ const BuscarProductoCajaRegistradora = ({buscarProducto,setProductoSeleccionado,
             setProductoSeleccionado(vector);
         }
     }
-
+    
     return (
         <>
             <div className="card" style={{"width": "50%", "maxHeight" : "350px", "height" : "350px"}}>
@@ -111,7 +112,7 @@ const BuscarProductoCajaRegistradora = ({buscarProducto,setProductoSeleccionado,
                                 <div className="row g-6">
                                     <div className="col-auto">
                                         <label><b>Precio</b></label>
-                                        <input type="text" className="form-control" readOnly value={precio}/>
+                                        <input type="text" className="form-control" readOnly value={"$"+formatoDinero(precio)}/>
                                     </div>
                                     <div className="col-auto">
                                         <label><b>Cantidad</b></label>

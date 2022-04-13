@@ -3,7 +3,7 @@ import HeaderContainer from "./navegacion/HeaderContainer";
 import NavBar from "./navegacion/Navbar";
 import SidebarMenu from "./navegacion/SideBarMenu";
 import axios from "../api/axios";
-import Boton from "../components/formulario/Boton";
+import FeatherIcon from 'feather-icons-react';
 import BuscarProductoCajaRegistradora from "../components/formulario/BuscarProductoCajaRegistradora";
 import TablaLateralProductos from "../components/formulario/TablaLateralProductos";
 
@@ -11,6 +11,7 @@ const Caja = ({ logOut, usuario})=>{
     const [titulo, setTitulo] = useState();
     const [productoSeleccionado, setProductoSeleccionado] = useState([]);
     const [total, setTotal] = useState(0);
+    const [showConfirm, setShowConfirm] = useState(false);
     const buscarProducto = async (codigo,completarFormulario,setMensaje)=>{
         try {
             const resultSet = await axios.post('/productos/buscar', {codigo});
@@ -33,6 +34,9 @@ const Caja = ({ logOut, usuario})=>{
         //console.log("Producto alterado");
         //console.log(productoSeleccionado);
     },[productoSeleccionado]);
+    useEffect(()=>{
+        
+    },[])
     return(
         <>
         <NavBar usuario={usuario.nombreUsuario+" "+usuario.apellidoUsuario} logOut={logOut}/>
@@ -60,8 +64,22 @@ const Caja = ({ logOut, usuario})=>{
                                 <div className="row">
                                     <div className="form-group">
                                         <div className="input-group">
-                                            <Boton label={"Finalizar Compra"} type={"Submit"} className="btn btn-success"/>
-                                            <Boton label={"Cancelar Compra"} type={"Submit"} className="btn btn-warning"/>
+                                            <div className="col text-center">
+                                                <div className="btn-group" role="group" aria-label="Basic example">
+                                                    <button type="button" className="btn btn-success">
+                                                        <FeatherIcon icon="dollar-sign" />
+                                                        &nbsp;Pagar
+                                                    </button>
+                                                    <button type="button" className="btn btn-warning">
+                                                        <FeatherIcon icon="user-plus" />
+                                                        &nbsp;Agregar Cliente
+                                                    </button>
+                                                    <button type="button" className="btn btn-danger">
+                                                        <FeatherIcon icon="x" />
+                                                        &nbsp;Cancelar venta
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

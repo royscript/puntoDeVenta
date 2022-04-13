@@ -34,11 +34,16 @@ const TablaLateralProductos = ({productos, total})=>{
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
-                                    <th></th>
+                                    <th colSpan={4} style={{"textAlign":"right"}}>SubTotal</th>
                                     <th>${formatoDinero(total)}</th>
+                                </tr>
+                                <tr>
+                                    <th colSpan={4} style={{"textAlign":"right"}}>Impuesto (19%)</th>
+                                    <th>${formatoDinero(Math.round(parseInt(total)*parseFloat(1.19))-parseInt(total))}</th>
+                                </tr>
+                                <tr>
+                                    <th colSpan={4} style={{"textAlign":"right"}}>Total</th>
+                                    <th>${formatoDinero(Math.round(parseInt(total)*parseFloat(1.19)))}</th>
                                 </tr>
                             </tfoot>
                         </table>
