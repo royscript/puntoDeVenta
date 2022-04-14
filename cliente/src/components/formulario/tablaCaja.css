@@ -1,13 +1,20 @@
-.caja body {
-    --table-width: 100%; /* Or any value, this will change dinamically */
-  }
-  .caja tbody {
-    display:block;
-    max-height:200px;
-    overflow-y:auto;
-  }
-  .caja thead,  .caja tbody,   .caja tr {
-    display:table;
-    width: var(--table-width);
-    table-layout:fixed;
-  }
+.tableFixHead {
+  overflow-y: auto;
+  height: 106px;
+}
+.tableFixHead thead th {
+  position: sticky;
+  top: 0;
+}
+.caja table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.caja th,
+.caja td {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+}
+.caja th {
+  background: #eee;
+}

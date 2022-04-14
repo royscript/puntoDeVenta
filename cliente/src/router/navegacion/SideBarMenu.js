@@ -48,6 +48,24 @@ const SidebarMenu = ({seccion})=>{
                     </Link>
                 </li>
                 <li className="nav-item">
+                    <Link to="/tipo-venta" className={seccion=='tipo-venta'?"nav-link active":"nav-link"}>
+                        <FeatherIcon icon="archive" />
+                        Tipo de Venta
+                    </Link>
+                </li>
+                <li className="nav-item">
+                    <Link to="/documento-de-venta" className={seccion=='documento-de-venta'?"nav-link active":"nav-link"}>
+                        <FeatherIcon icon="archive" />
+                        Documento de Venta
+                    </Link>
+                </li>
+                <li className="nav-item">
+                    <Link to="/medio-de-pago" className={seccion=='medio-de-pago'?"nav-link active":"nav-link"}>
+                        <FeatherIcon icon="archive" />
+                        Medio de Pago
+                    </Link>
+                </li>
+                <li className="nav-item">
                     <Link to="/caja" className={seccion=='caja'?"nav-link active":"nav-link"}>
                         <FeatherIcon icon="shopping-cart" />
                         Caja 

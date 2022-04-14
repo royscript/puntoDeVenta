@@ -3,6 +3,13 @@ const Productos = require('../modelo/Productos');
 const RouterRespuestas = require('../utils/RouterRespuestas');
 const producto = new Productos();
 
+router.get("/listar",(req, res)=>{
+    const { body } = req;
+    RouterRespuestas(
+                    async ()=> await producto.listarTodos(),
+                    res
+                    );
+});
 router.post("/listar",(req, res)=>{
     const { body } = req;
     const { pagSiguiente, cantPorPag, search }= body;

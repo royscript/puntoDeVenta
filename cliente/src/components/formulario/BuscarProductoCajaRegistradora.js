@@ -1,7 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import formatoDinero from "../../funciones/formatoDinero";
+const useFocus = () => {
+    const htmlElRef = useRef(null)
+    const setFocus = () => {htmlElRef.current &&  htmlElRef.current.focus()}
 
-const BuscarProductoCajaRegistradora = ({buscarProducto,setProductoSeleccionado, productoSeleccionado, setTotal })=>{
+    return [ htmlElRef, setFocus ] 
+}
+const BuscarProductoCajaRegistradora = ({buscarProducto,setProductoSeleccionado, productoSeleccionado, setTotal, productoEncontradoPopUp })=>{
     const [mensaje, setMensaje] = useState('Esperando el código de barras o interno');
     const [producto, setProducto] = useState([]);
     const [parametro, setParametro] = useState('');
@@ -11,6 +16,7 @@ const BuscarProductoCajaRegistradora = ({buscarProducto,setProductoSeleccionado,
     const [stock, setStock] = useState('');
     const [precio, setPrecio] = useState(0);
     const [cantidad, setCantidad] = useState(0);
+    const inputBusquedaFocus = useRef();
     //------------------------------------------------
     const completarFormulario = (prod)=>{
         setProducto(prod);
@@ -23,6 +29,16 @@ const BuscarProductoCajaRegistradora = ({buscarProducto,setProductoSeleccionado,
         setParametro("");
         //setProducto([]);
     },[])
+    useEffect(()=>{
+        if((typeof productoEncontradoPopUp.idProducto === 'undefined')==false){
+            completarFormulario([productoEncontradoPopUp]);
+            buscarPorCodigo(productoEncontradoPopUp.codigoBarraProducto);
+            //setInputBusquedaFocus();
+            inputBusquedaFocus.current.focus();
+            console.log(inputBusquedaFocus.current);
+            //agregarCantidad(); ahora dejamos esperando que ingrese la cantidad
+        }
+    },[productoEncontradoPopUp])
     
     const entregarProducto = (producto, cantidad)=>{
         if(producto.length>0){
@@ -46,36 +62,42 @@ const BuscarProductoCajaRegistradora = ({buscarProducto,setProductoSeleccionado,
         }
     }
     
+    const buscarPorCodigo = (parametro)=>{
+        setMensaje("Esperando cantidad");
+        setEstadoBusqueda("cantidad");
+        setCodigoBuscar(parametro);
+        setParametro("");
+    }
+    const agregarCantidad = (parametro)=>{
+        setEstadoBusqueda("codigo");
+        setMensaje("Esperando el código de barras o interno");
+        setCantidad(parametro);
+        setParametro("");
+        entregarProducto(producto,parametro);
+    }
     return (
         <>
             <div className="card" style={{"width": "50%", "maxHeight" : "350px", "height" : "350px"}}>
                 <div className="card-body">
                     <div className="mb-3">
                         <label htmlFor="exampleFormControlInput1" className="form-label">Producto :</label>
-                        <input type={estadoBusqueda==='cantidad'?"number":"text"} className="form-control is-invalid" autoFocus 
+                        <input type={estadoBusqueda==='cantidad'?"number":"text"} 
+                            className="form-control is-invalid" autoFocus 
                             onChange={(e)=>setParametro(e.target.value)}
+                            ref={inputBusquedaFocus}
                             onKeyDown={async (event) => {
                                 if (event.key === 'Enter') {
                                     if(parametro!=null && parametro!='' && typeof(parametro) !== "undefined"){
-                                        console.log("paso "+parametro);
                                         if(estadoBusqueda==='codigo'){
                                             const resp = await buscarProducto(parametro,completarFormulario,setMensaje);
-                                            
                                             if(resp===true){
-                                                setMensaje("Esperando cantidad");
-                                                setEstadoBusqueda("cantidad");
-                                                setCodigoBuscar(parametro);
-                                                setParametro("");
+                                                buscarPorCodigo(parametro);
                                             }else{
                                                 setMensaje("Condigo no encontrado, esperando el código de barras o interno.");
                                             }
                                             
                                         }else if(estadoBusqueda==='cantidad'){
-                                            setEstadoBusqueda("codigo");
-                                            setMensaje("Esperando el código de barras o interno");
-                                            setCantidad(parametro);
-                                            setParametro("");
-                                            entregarProducto(producto,parametro);
+                                            agregarCantidad(parametro);
                                         }
                                     }
                                 }

@@ -20,6 +20,9 @@ const Proveedor = require('./controlador/proveedor');
 const DocumentoCompra = require('./controlador/documentoCompra');
 const Compra = require('./controlador/compra');
 const DetalleCompra = require('./controlador/detalleCompra');
+const TipoVenta = require('./controlador/tipoVenta');
+const DocumentoDeVenta = require('./controlador/documentoDeVenta');
+const MedioDePago = require('./controlador/medioDePago');
 //----------------------------
 
 //--------MIDDLEWARE-----------
@@ -38,6 +41,9 @@ app.use('/api/usuario/', Usuarios);
 app.use('/api/permisos/', Permisos);
 app.use('/api/productos/', Productos);
 app.use('/api/familia-producto/', FamiliaProducto);
+app.use('/api/tipo-venta/', TipoVenta);
+app.use('/api/documento-de-venta/', DocumentoDeVenta);
+app.use('/api/medio-de-pago/', MedioDePago);
 app.use('/api/estado/', Estado);
 app.use('/api/proveedor/', Proveedor);
 app.use('/api/documento-compra/', DocumentoCompra);

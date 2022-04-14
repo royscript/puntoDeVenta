@@ -6,8 +6,8 @@ const TablaLateralProductos = ({productos, total})=>{
         <>
             <div className="card" style={{"width": "50%"}}>
                 <div className="card-body">
-                    <div className="mb-3" style={{"height":"100%"}}>
-                        <table className="table">
+                    <div className="mb-3 tableFixHead" style={{"height":"200px"}}>
+                        <table className="caja">
                             <thead>
                                 <tr>
                                     <th>Codigo</th>
@@ -19,7 +19,7 @@ const TablaLateralProductos = ({productos, total})=>{
                             </thead>
                             <tbody>
                                 {
-                                    productos.map((prod,key)=>{
+                                    productos.slice(0).reverse().map((prod,key)=>{
                                     let subTotal = parseInt(prod.cantidad) * parseInt(prod.precioVentaProducto);
                                     return (<tr key={key+'-prod'}>
                                                 <td>{prod.codigoBarraProducto}</td>
@@ -32,22 +32,25 @@ const TablaLateralProductos = ({productos, total})=>{
                                 }
                                 
                             </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th colSpan={4} style={{"textAlign":"right"}}>SubTotal</th>
-                                    <th>${formatoDinero(total)}</th>
-                                </tr>
-                                <tr>
-                                    <th colSpan={4} style={{"textAlign":"right"}}>Impuesto (19%)</th>
-                                    <th>${formatoDinero(Math.round(parseInt(total)*parseFloat(1.19))-parseInt(total))}</th>
-                                </tr>
-                                <tr>
-                                    <th colSpan={4} style={{"textAlign":"right"}}>Total</th>
-                                    <th>${formatoDinero(Math.round(parseInt(total)*parseFloat(1.19)))}</th>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
+                    <table className='caja' style={{"float":"right"}}>
+                        <thead>
+                            <tr>
+                                <th colSpan={4} style={{"textAlign":"right"}}>SubTotal</th>
+                                <th>${formatoDinero(total)}</th>
+                            </tr>
+                            <tr>
+                                <th colSpan={4} style={{"textAlign":"right"}}>Impuesto (19%)</th>
+                                <th>${formatoDinero(Math.round(parseInt(total)*parseFloat(1.19))-parseInt(total))}</th>
+                            </tr>
+                            <tr>
+                                <th colSpan={4} style={{"textAlign":"right"}}>Total</th>
+                                <th>${formatoDinero(Math.round(parseInt(total)*parseFloat(1.19)))}</th>
+                            </tr>
+                        </thead>
+                                
+                        </table>
                 </div>
             </div>
         </>

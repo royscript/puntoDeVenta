@@ -6,12 +6,14 @@ import axios from "../api/axios";
 import FeatherIcon from 'feather-icons-react';
 import BuscarProductoCajaRegistradora from "../components/formulario/BuscarProductoCajaRegistradora";
 import TablaLateralProductos from "../components/formulario/TablaLateralProductos";
+import ModalGrande from "../components/popUp/ModalGrande";
+import BuscarProducto from "../components/popUp/personalizadas/BuscarProducto";
 
 const Caja = ({ logOut, usuario})=>{
     const [titulo, setTitulo] = useState();
     const [productoSeleccionado, setProductoSeleccionado] = useState([]);
     const [total, setTotal] = useState(0);
-    const [showConfirm, setShowConfirm] = useState(false);
+    const [productoEncontradoPopUp, setProductoEncontradoPopUp] = useState([]);
     const buscarProducto = async (codigo,completarFormulario,setMensaje)=>{
         try {
             const resultSet = await axios.post('/productos/buscar', {codigo});
@@ -51,7 +53,13 @@ const Caja = ({ logOut, usuario})=>{
                                 <div className="row">
                                 <div className="form-group">
                                         <div className="input-group">
-                                            <BuscarProductoCajaRegistradora buscarProducto={buscarProducto} setProductoSeleccionado={setProductoSeleccionado} productoSeleccionado={productoSeleccionado} setTotal={setTotal}>
+                                            <BuscarProductoCajaRegistradora 
+                                                buscarProducto={buscarProducto} 
+                                                setProductoSeleccionado={setProductoSeleccionado} 
+                                                productoSeleccionado={productoSeleccionado} 
+                                                setTotal={setTotal}
+                                                productoEncontradoPopUp={productoEncontradoPopUp}
+                                                >
 
                                             </BuscarProductoCajaRegistradora>
                                             <TablaLateralProductos productos={productoSeleccionado} total={total}/>
@@ -64,7 +72,7 @@ const Caja = ({ logOut, usuario})=>{
                                 <div className="row">
                                     <div className="form-group">
                                         <div className="input-group">
-                                            <div className="col text-center">
+                                            <div className="col text-center" style={{"zIndex":"0"}}>
                                                 <div className="btn-group" role="group" aria-label="Basic example">
                                                     <button type="button" className="btn btn-success">
                                                         <FeatherIcon icon="dollar-sign" />
@@ -74,11 +82,20 @@ const Caja = ({ logOut, usuario})=>{
                                                         <FeatherIcon icon="user-plus" />
                                                         &nbsp;Agregar Cliente
                                                     </button>
-                                                    <button type="button" className="btn btn-danger">
+                                                    <ModalGrande 
+                                                        className="btn btn-info"
+                                                        Componente={BuscarProducto}
+                                                        funcionAdicionalSet={setProductoEncontradoPopUp}
+                                                        >
+                                                        <FeatherIcon icon="search" />
+                                                        &nbsp;Buscar Producto
+                                                    </ModalGrande>
+                                                    <button type="button" className="btn btn-warning">
                                                         <FeatherIcon icon="x" />
                                                         &nbsp;Cancelar venta
                                                     </button>
                                                 </div>
+                                                
                                             </div>
                                         </div>
                                     </div>

@@ -7,6 +7,12 @@ class Productos extends mysql{
     async buscar(codigoBuscar){
         return await this.consulta("SELECT * FROM producto WHERE idProducto LIKE ? OR codigoBarraProducto LIKE ?",[codigoBuscar, codigoBuscar]);
     }
+    async listarTodos(){
+        return await this.consulta(`SELECT *
+                                    FROM producto P
+                                    INNER JOIN familia F
+                                    on(P.Familia_idFamilia=F.idFamilia)`);
+    }
     async listar(pagSiguiente, cantPorPag, search){
         var where = ''; 
         var parametrosBuscar = [];

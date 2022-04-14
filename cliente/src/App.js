@@ -13,6 +13,9 @@ import DocumentoCompra from './router/DocumentoCompra';
 import Compra from './router/Compra';
 import DetalleCompra from './router/DetalleCompra';
 import Caja from './router/Caja';
+import TipoVenta from './router/TipoVenta';
+import DocumentoDeVenta from './router/DocumentoDeVenta';
+import MedioDePago from './router/MedioDePago';
 function App() {
     const [usuario, setUsuario] = useState();
     const [sesion, setSesion] = useState(null);
@@ -150,6 +153,21 @@ function App() {
            <Route 
            path="/caja" 
            element={<Caja logOut={logOut} usuario={usuario}/>}/>
+        )}
+        {sesion &&(
+           <Route 
+           path="/tipo-venta" 
+           element={<TipoVenta logOut={logOut} usuario={usuario}/>}/>
+        )}
+        {sesion &&(
+           <Route 
+           path="/documento-de-venta" 
+           element={<DocumentoDeVenta logOut={logOut} usuario={usuario}/>}/>
+        )}
+        {sesion &&(
+           <Route 
+           path="/medio-de-pago" 
+           element={<MedioDePago logOut={logOut} usuario={usuario}/>}/>
         )}
         <Route
           path="*"

@@ -6,29 +6,21 @@ import axios from "../api/axios";
 import { Formik, Form } from "formik";
 import Input from "../components/formulario/Input";
 import Boton from "../components/formulario/Boton";
-import Select from "../components/formulario/Select";
 import TablePagination from "../components/tablas/TablePagination";
 import InputReadOnly from "../components/formulario/InputReadOnly";
-import formatoDinero from "../funciones/formatoDinero";
-import FeatherIcon from 'feather-icons-react';
-import { Link, useParams } from "react-router-dom";
-import SelectSearchA from "../components/formulario/SelectSearch";
 
-const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
-    let { idCompraOrigen } = useParams();//Capturamos el id de la compra
+const TipoVenta = ({children, logOut, conseguirPermisos, usuario})=>{
     const [titulo, setTitulo] = useState();
     const [respuestaConsulta, setRespuestaConsulta] = useState();
-    const [compras, setCompra] = useState([]);
+    const [tipoVenta, setTipoVenta] = useState([]);
     const [valoresFormulario, setValoresFormulario] = useState(null);
     const [botonPresionado,setBotonPresionado] = useState(null);
     const [pagSiguiente, setPagSiguiente] = useState(1);
     const [cantPorPag, setCantPorPag] = useState(5);
-    const [producto, setProducto] = useState([]);
-    const [familia, setFamilia] = useState([]);
-    const listarCompras = async (search)=>{
+    const listarTipoVenta = async (search)=>{
         try {
-            const resultSet = await axios.post('/compra/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search});
-            setCompra(resultSet.data);
+            const resultSet = await axios.post('/tipo-venta/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search});
+            setTipoVenta(resultSet.data);
         } catch (error) {
             setRespuestaConsulta(
                 <div className="alert alert-danger" role="alert">
@@ -38,15 +30,15 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
         }
         
     }
-    const eliminarCompra = async (id)=>{
+    const eliminarTipoVenta = async (id)=>{
         try {
-            const resultSet = await axios.post('/compra/eliminar', {id});
+            const resultSet = await axios.post('/tipo-venta/eliminar', {id});
             setRespuestaConsulta(
                 <div className="alert alert-danger" role="alert">
                     Producto <b>Eliminado</b> Correscamente
                     <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>);
-            listarCompras();
+            listarTipoVenta();
         } catch (error) {
             setRespuestaConsulta(
                 <div className="alert alert-danger" role="alert">
@@ -56,95 +48,33 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
         }
         
     }
-    const listarFamiliaProducto = async ()=>{
-        const resultSet = await axios.get('/familia-producto/listar');
-        setFamilia(resultSet.data);
-    }
-    const buscarProducto = async() =>{
-        try {
-            const resultSet = await axios.get('/productos/listar');
-            console.log(resultSet);
-            var arrayCompleto = [];
-            familia.forEach(fam => {
-                var arrayProductos = [];
-                resultSet.data.forEach((prod, key)=>{
-                    if(fam.idFamilia==prod.Familia_idFamilia){
-                        arrayProductos.push({ name: prod.nombreProducto, value: prod.idProducto });
-                    }
-                });
-                arrayCompleto.push({
-                    type: "group",
-                    name: fam.nombreFamilia,
-                    items: arrayProductos
-                });
-            });
-            console.log(arrayCompleto);
-            setProducto(arrayCompleto);
-        } catch (error) {
-            
-        }
-    }
     useEffect(()=>{
-        buscarProducto();
-    },[familia]);
-    useEffect(()=>{
-        listarCompras();
+        listarTipoVenta();
     },[pagSiguiente,cantPorPag])
     useEffect(()=>{
-        listarFamiliaProducto();
-        setTitulo("Detalle Compra");
+        setTitulo("Tipo Venta");
         //conseguirPermisos();
         //console.log(usuario);
-        listarCompras();
-        buscarProducto();
+        listarTipoVenta();
     },[])
-    
     return(
         <>
         <NavBar usuario={usuario.nombreUsuario+" "+usuario.apellidoUsuario} logOut={logOut}/>
-
             <div className="container-fluid">
                 <div className="row">
-                    <SidebarMenu seccion={"compra"}/>
+                    <SidebarMenu seccion={"tipo-venta"}/>
                     <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                         <HeaderContainer titulo={titulo}/>
-                        {children}
                         <Formik
-                            initialValues={valoresFormulario || { idProducto : '', articleType: 'other'}}
+                            initialValues={valoresFormulario || {idTipoVenta : '', nombreTipoVenta : ''}}
                             enableReinitialize
                             validate={
                                 (values) => {
                                     const errors = {}
-                                    if(!values.FechaCompra) {
-                                        errors.FechaCompra = 'Requerido'
-                                    } else if (values.FechaCompra.length < 4) {
-                                        errors.FechaCompra = 'Ingresa la fecha de la compra'
-                                    }
-                                    if(!values.FechaRegistroCompra) {
-                                        errors.FechaRegistroCompra = 'Requerido'
-                                    } else if (values.FechaRegistroCompra.length < 5) {
-                                        errors.FechaRegistroCompra = 'Ingresa la fecha cuando se hizo la compra'
-                                    }
-                                    if(!values.numeroDocumentoCompra) {
-                                        errors.numeroDocumentoCompra = 'Requerido'
-                                    } else if (values.numeroDocumentoCompra.length < 3) {
-                                        errors.numeroDocumentoCompra = 'Ingresa el numero de documento de la compra'
-                                    }
-                                    if(!values.totalCompra) {
-                                        errors.totalCompra = 'Requerido'
-                                    } else if (values.totalCompra.length < 2) {
-                                        errors.totalCompra = 'Ingresa el total de la compra'
-                                    }
-                                    if(!values.impuestoCompra) {
-                                        errors.impuestoCompra = 'Requerido'
-                                    } else if (values.impuestoCompra.length < 5) {
-                                        errors.impuestoCompra = 'Ingresa el impuesto de la compra'
-                                    }
-                                    if(!values.DocumentoCompra_idDocumentoCompra) {
-                                        errors.DocumentoCompra_idDocumentoCompra = 'Selecciona el tipo de documento'
-                                    }
-                                    if(!values.Proveedor_idProveedor) {
-                                        errors.Proveedor_idProveedor = 'Selecciona el proveedor'
+                                    if(!values.nombreTipoVenta) {
+                                        errors.nombreTipoVenta = 'Requerido'
+                                    } else if (values.nombreTipoVenta.length < 5) {
+                                        errors.nombreTipoVenta = 'Ingresa el Nombre del Tipo de Venta'
                                     }
                                     return errors
                                 }
@@ -153,13 +83,13 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                 props.handleFormChange(name, value); // call some method from parent 
                             }}
                             onSubmit={async (values,{resetForm,submitForm})=>{
-                                if(botonPresionado=="Guardar"){
-                                    axios.put('/compra/insertar', { FechaRegistroCompra: values.FechaRegistroCompra, numeroDocumentoCompra: values.numeroDocumentoCompra, totalCompra: values.totalCompra, impuestoCompra: values.impuestoCompra, Usuario_idUsuario: usuario.idUsuario, DocumentoCompra_idDocumentoCompra: values.DocumentoCompra_idDocumentoCompra, Proveedor_idProveedor: values.Proveedor_idProveedor})
+                                if(botonPresionado==="Guardar"){
+                                    axios.put('/tipo-venta/insertar', { nombreTipoVenta : values.nombreTipoVenta })
                                         .then(res => {
                                             if(res.status===200){
                                                 resetForm({values: ''});
                                                 setValoresFormulario(null);
-                                                listarCompras();
+                                                listarTipoVenta();
                                                 setRespuestaConsulta(
                                                     <div className="alert alert-success" role="alert">
                                                         Datos Ingresados Correctamente
@@ -176,12 +106,13 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                         }
                                     }) 
                                 }else{
-                                    axios.put('/compra/editar', {  idCompra: values.idCompra, FechaCompra: values.FechaCompra, FechaRegistroCompra: values.FechaRegistroCompra, numeroDocumentoCompra: values.numeroDocumentoCompra, totalCompra: values.totalCompra, impuestoCompra: values.impuestoCompra, Usuario_idUsuario: usuario.idUsuario, DocumentoCompra_idDocumentoCompra: values.DocumentoCompra_idDocumentoCompra, Proveedor_idProveedor: values.Proveedor_idProveedor})
+                                    axios.put('/tipo-venta/editar', { nombreTipoVenta : values.nombreTipoVenta,
+                                        idTipoVenta : values.idTipoVenta })
                                     .then(res => {
                                         if(res.status===200){
                                             resetForm({values: ''});
                                             setValoresFormulario(null);
-                                            listarCompras();
+                                            listarTipoVenta();
                                             setRespuestaConsulta(
                                                 <div className="alert alert-warning" role="alert">
                                                     Datos <b>modificados</b> Correctamente
@@ -212,21 +143,8 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                     <div className="accordion-body">
                                         <div className="card" style={{"width": "100%"}}>
                                             <div className="card-body">
-                                                <InputReadOnly name="idCompra" label="Id Compra"/>
-                                                <Input name="FechaCompra" label="Fecha" type="date" readOnly/>
-                                                <Input name="FechaRegistroCompra" label="Fecha de la compra" type="date"/>
-                                                <Input name="numeroDocumentoCompra" label="Numero Documento Compra" type="text"/>
-                                                <Input name="totalCompra" label="Total de la Compra" type="number"/>
-                                                <Input name="impuestoCompra" label="Impuesto de la Compra" type="number"/>
-                                                
-                                                <SelectSearchA data={producto} 
-                                                    placeHolder={"Seleccione el producto"} 
-                                                    name={"idProducto"}
-                                                    value={13}
-                                                    handleChange={(...args)=>{
-                                                        console.log("ARGS:", args);
-                                                    }}/>
-                                                
+                                                <InputReadOnly name="idTipoVenta" label="Id Tipo de Venta"/>
+                                                <Input name="nombreTipoVenta" label="Nombre Tipo de Venta" type="text"/>
                                             </div>
                                             <div className="card-footer">
                                                 <div className="row">
@@ -250,29 +168,15 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                 head={
                                     <tr>
                                         <th>#</th>
-                                        <th>Fecha Compra</th>
-                                        <th>Fecha Registro Compra</th>
-                                        <th>Numero Documento Compra</th>
-                                        <th>Total Compra</th>
-                                        <th>Impuesto Compra</th>
-                                        <th>Usuario</th>
-                                        <th>Documento Compra</th>
-                                        <th>Proveedor</th>
+                                        <th>Nombre Tipo de Venta</th>
                                         <th>Accion</th>
                                     </tr>
                                 }
                                 mostrarDatos={
                                     (value,index)=>
                                     <tr key={index+'fila'}>
-                                        <td>{value.idCompra}</td>
-                                        <td>{value.FechaCompra_formateada}</td>
-                                        <td>{value.FechaRegistroCompra_formateada}</td>
-                                        <td>{value.numeroDocumentoCompra}</td>
-                                        <td>$ {formatoDinero(value.totalCompra)}</td>
-                                        <td>$ {formatoDinero(value.impuestoCompra)}</td>
-                                        <td>{value.nombreUsuario} {value.apellidoUsuario}</td>
-                                        <td>{(value.DocumentoCompra_idDocumentoCompra)}</td>
-                                        <td>{(value.Proveedor_idProveedor)}</td>
+                                        <td>{value.idTipoVenta}</td>
+                                        <td>{value.nombreTipoVenta}</td>
                                         <td>
                                             <div className="btn-group" role="group">
                                                 <button type="button" className="btn btn-warning" onClick={
@@ -284,15 +188,10 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                                         <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                                                     </svg>
                                                 </button>
-                                                <Link to={"/detalle-compra/"+value.idCompra} className="btn btn-success">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-cart4" viewBox="0 0 16 16">
-                                                        <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l.5 2H5V5H3.14zM6 5v2h2V5H6zm3 0v2h2V5H9zm3 0v2h1.36l.5-2H12zm1.11 3H12v2h.61l.5-2zM11 8H9v2h2V8zM8 8H6v2h2V8zM5 8H3.89l.5 2H5V8zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
-                                                    </svg>
-                                                </Link>
                                                 <button type="button" className="btn btn-danger" onClick={
                                                     ()=>{
-                                                        var resp = window.confirm(`Desea eliminar esta Compra ${value.numeroDocumentoCompra}`);
-                                                        if(resp) eliminarCompra(value.idCompra);
+                                                        var resp = window.confirm(`Desea eliminar esta familia? ${value.nombreTipoVenta}`);
+                                                        if(resp) eliminarTipoVenta(value.idTipoVenta);
                                                     }
                                                 }>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash-fill" viewBox="0 0 16 16">
@@ -303,11 +202,11 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                         </td>
                                     </tr>
                                 }
-                                data={compras}
+                                data={tipoVenta}
                                 setCantPorPag={setCantPorPag}
                                 setPagSiguiente={setPagSiguiente}
-                                funcionDeDatos={listarCompras}
-                                placeHolderSearch="Buscar por numero de documento y proveedor"
+                                funcionDeDatos={listarTipoVenta}
+                                placeHolderSearch="Buscar por nombre de tipo de venta"
                             />
                             </Form>
                         </Formik>
@@ -320,4 +219,4 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
         </>
     )
 }
-export default DetalleCompra;
+export default TipoVenta;
