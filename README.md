@@ -1,5 +1,5 @@
 # puntoDeVenta
-Software de Punto de Venta Open Source desarrollado con NodeJs, React JS, mysql.
+Software de Punto de Venta Open Source desarrollado con NodeJs, React JS (Formik), mysql.
 ## Modulos
 * Home
 * Familia Producto
