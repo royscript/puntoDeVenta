@@ -1,2 +1,17 @@
 # puntoDeVenta
-Software de Punto de Venta
+Software de Punto de Venta Open Source desarrollado con NodeJs, React JS, mysql.
+## Modulos
+* Home
+* Familia Producto
+* Productos
+* Usuarios
+* Proveedor
+* Documento de Compra
+* Compras
+* Tipo de Venta
+* Documento de Venta
+* Medio de Pago
+* Caja
+```
+
+```
