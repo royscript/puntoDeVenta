@@ -52,6 +52,10 @@ const BuscarProductoCajaRegistradora = ({buscarProducto,setProductoSeleccionado,
                 });
             }else{
                 vector[elementoRepetido].cantidad += parseInt(cantidad);
+                if(parseInt(vector[elementoRepetido].cantidad)<=0){
+                    //Si el elemento es menor a 0 se elimina
+                    vector.splice(elementoRepetido, 1);
+                }
             }
             var total = 0;
             productoSeleccionado.forEach((el)=>{

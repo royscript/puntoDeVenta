@@ -8,12 +8,15 @@ import BuscarProductoCajaRegistradora from "../components/formulario/BuscarProdu
 import TablaLateralProductos from "../components/formulario/TablaLateralProductos";
 import ModalGrande from "../components/popUp/ModalGrande";
 import BuscarProducto from "../components/popUp/personalizadas/BuscarProducto";
+import AgregarCliente from "../components/popUp/personalizadas/AgregarCliente";
+import Pagar from "../components/popUp/personalizadas/Pagar";
 
 const Caja = ({ logOut, usuario})=>{
     const [titulo, setTitulo] = useState();
     const [productoSeleccionado, setProductoSeleccionado] = useState([]);
     const [total, setTotal] = useState(0);
     const [productoEncontradoPopUp, setProductoEncontradoPopUp] = useState([]);
+    const [cliente, setCliente] = useState(null);
     const buscarProducto = async (codigo,completarFormulario,setMensaje)=>{
         try {
             const resultSet = await axios.post('/productos/buscar', {codigo});
@@ -27,6 +30,13 @@ const Caja = ({ logOut, usuario})=>{
         } catch (error) {
             setMensaje("Esperando el código de barras o interno. Error : "+error);
         }
+    }
+
+    const limpiar=()=>{
+        setProductoSeleccionado([]);
+        setTotal(0);
+        setProductoEncontradoPopUp([]);
+        setCliente(null);
     }
     useEffect(()=>{
         setTitulo("Caja Registradora");
@@ -52,6 +62,9 @@ const Caja = ({ logOut, usuario})=>{
                             <div className="card-body">
                                 <div className="row">
                                 <div className="form-group">
+                                    {cliente!=null?<b>Cliente : {cliente.nombreUsuario} {cliente.apellidoUsuario}</b>:null}
+                                </div>
+                                <div className="form-group">
                                         <div className="input-group">
                                             <BuscarProductoCajaRegistradora 
                                                 buscarProducto={buscarProducto} 
@@ -74,14 +87,30 @@ const Caja = ({ logOut, usuario})=>{
                                         <div className="input-group">
                                             <div className="col text-center" style={{"zIndex":"0"}}>
                                                 <div className="btn-group" role="group" aria-label="Basic example">
-                                                    <button type="button" className="btn btn-success">
+                                                    {productoSeleccionado.length>0 && cliente!=null?
+                                                    <ModalGrande 
+                                                        className="btn btn-success"
+                                                        Componente={Pagar}
+                                                        funcionAdicionalSet={setCliente}
+                                                        detalleVenta={productoSeleccionado}
+                                                        cliente={cliente}
+                                                        usuario={usuario}
+                                                        >
                                                         <FeatherIcon icon="dollar-sign" />
                                                         &nbsp;Pagar
-                                                    </button>
-                                                    <button type="button" className="btn btn-warning">
+                                                    </ModalGrande>
+                                                    :
+                                                    null
+                                                }
+                                                    
+                                                    <ModalGrande 
+                                                        className="btn btn-warning"
+                                                        Componente={AgregarCliente}
+                                                        funcionAdicionalSet={setCliente}
+                                                        >
                                                         <FeatherIcon icon="user-plus" />
                                                         &nbsp;Agregar Cliente
-                                                    </button>
+                                                    </ModalGrande>
                                                     <ModalGrande 
                                                         className="btn btn-info"
                                                         Componente={BuscarProducto}
@@ -90,9 +119,11 @@ const Caja = ({ logOut, usuario})=>{
                                                         <FeatherIcon icon="search" />
                                                         &nbsp;Buscar Producto
                                                     </ModalGrande>
-                                                    <button type="button" className="btn btn-warning">
+                                                    <button type="button" className="btn btn-danger" onClick={
+                                                        ()=>limpiar()
+                                                    }>
                                                         <FeatherIcon icon="x" />
-                                                        &nbsp;Cancelar venta
+                                                        &nbsp;Limpiar
                                                     </button>
                                                 </div>
                                                 

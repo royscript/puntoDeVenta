@@ -19,9 +19,17 @@ router.post("/listar",(req, res)=>{
 });
 router.put("/insertar",(req, res)=>{
     const { body } = req;
-    const { cantidadDetalleCompra, valorDetalleCompra, Producto_idProducto, Compra_idCompra }= body;
+    const { nombreProducto, valorProducto, cantidad, Estado_idEstado, Familia_idFamilia, precioVentaProducto, codigoBarraProducto, Compra_idCompra }= body;
     RouterRespuestas(
-                    async ()=> await detalleCompra.insertar(cantidadDetalleCompra, valorDetalleCompra, Producto_idProducto, Compra_idCompra),
+                    async ()=> await detalleCompra.insertar(nombreProducto, valorProducto, cantidad, Estado_idEstado, Familia_idFamilia, precioVentaProducto, codigoBarraProducto, Compra_idCompra),
+                    res
+                    );
+});
+router.put("/actualizar-stocks",(req, res)=>{
+    const { body } = req;
+    const { Compra_idCompra }= body;
+    RouterRespuestas(
+                    async ()=> await detalleCompra.actualizarStocks(Compra_idCompra),
                     res
                     );
 });

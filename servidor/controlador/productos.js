@@ -12,16 +12,16 @@ router.get("/listar",(req, res)=>{
 });
 router.post("/listar",(req, res)=>{
     const { body } = req;
-    const { pagSiguiente, cantPorPag, search }= body;
+    const { pagSiguiente, cantPorPag, search, paraVentas }= body;
     RouterRespuestas(
-                    async ()=> await producto.listar(pagSiguiente, cantPorPag, search),
+                    async ()=> await producto.listar(pagSiguiente, cantPorPag, search, paraVentas),
                     res
                     );
 });
 router.post("/buscar",(req, res)=>{
     const { body } = req;
     const { codigo }= body;
-    console.log(codigo);
+    //console.log(codigo);
     RouterRespuestas(
                     async ()=> await producto.buscar(codigo),
                     res

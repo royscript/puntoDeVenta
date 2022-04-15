@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
 const customStyles = {
     content: {
@@ -12,7 +12,7 @@ const customStyles = {
     },
 };
 Modal.setAppElement('#root');
-const ModalGrande = ({className, children, Componente, funcionAdicionalSet})=>{
+const ModalGrande = ({className, children, Componente, funcionAdicionalSet, ...props})=>{
     const [showConfirm, setShowConfirm] = useState(false);
     const [modalIsOpen, setIsOpen] = useState(false);
     const openModal = ()=>{
@@ -21,6 +21,7 @@ const ModalGrande = ({className, children, Componente, funcionAdicionalSet})=>{
     const closeModal = () => {
         setIsOpen(false);
     }
+
     return(
         <div>
             <button onClick={openModal} className={className}>
@@ -32,7 +33,7 @@ const ModalGrande = ({className, children, Componente, funcionAdicionalSet})=>{
                 style={customStyles}
                 contentLabel="Example Modal"
             >
-                <Componente cerrar={closeModal} funcionAdicionalSet={funcionAdicionalSet}/>
+                <Componente cerrar={closeModal} funcionAdicionalSet={funcionAdicionalSet} {...props}/>
             </Modal>
         </div>
     )

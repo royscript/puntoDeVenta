@@ -20,6 +20,7 @@ class conexionMysql {
             });
         });
     }
+    
     paginador(pagSiguiente, cantPorPag){
         pagSiguiente = (parseInt(pagSiguiente) - 1)*parseInt(cantPorPag);
         if(isNaN(pagSiguiente)) pagSiguiente = 0;

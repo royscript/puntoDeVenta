@@ -4,7 +4,7 @@ const Input = ({ label,type, ...props})=>{
     return (
         <div className="mb-3">
             <label htmlFor="exampleFormControlInput1" className="form-label">{label}</label>
-            <input type={type} className={meta.touched && meta.error ? "form-control is-invalid" : "form-control"} {...field}/>
+            <input type={type} className={meta.touched && meta.error ? "form-control is-invalid" : "form-control"} {...field} {...props}/>
                 {meta.touched && meta.error ? 
                     <div className="invalid-feedback">{meta.error}</div>
                     :

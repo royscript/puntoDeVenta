@@ -9,6 +9,10 @@ class Usuarios extends mysql{
         return this.consulta("SELECT * FROM usuario");
     }
 
+    async buscarPorRut(rutUsuario){
+        return await this.consulta("SELECT * FROM usuario WHERE rutUsuario LIKE ? ",[rutUsuario]);
+    }
+
     login(rutUsuario,contrasena){
         const sql = "SELECT * FROM usuario where rutUsuario like (?) and contrasenaUsuario like (?) ";
         return this.consulta(sql,[rutUsuario,contrasena]);

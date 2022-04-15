@@ -76,7 +76,6 @@ const Usuarios = ({children, logOut, conseguirPermisos, usuario})=>{
                     <SidebarMenu seccion={"usuarios"}/>
                     <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                         <HeaderContainer titulo={titulo}/>
-                        {children}
                         <Formik
                             initialValues={valoresFormulario || {idUsuario : '', nombreUsuario: '' , apellidoUsuario: '' , emailUsuario: '' , rutUsuario: '' , contrasenaUsuario: '' , direccionUsuario: '' , telefonoUsuario: '' , Permiso_idPermiso: ''}}
                             enableReinitialize

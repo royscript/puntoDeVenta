@@ -10,7 +10,7 @@ const BuscarProducto = ({cerrar,funcionAdicionalSet})=>{
     const [cantPorPag, setCantPorPag] = useState(5);
     const listarProductos = async (search)=>{
         try {
-            const resultSet = await axios.post('/productos/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search});
+            const resultSet = await axios.post('/productos/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search, paraVentas : true});
             setProductos(resultSet.data);
         } catch (error) {
             

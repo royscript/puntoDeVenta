@@ -5,7 +5,7 @@ class Productos extends mysql{
         this.usuariosOnline = [];
     }
     async buscar(codigoBuscar){
-        return await this.consulta("SELECT * FROM producto WHERE idProducto LIKE ? OR codigoBarraProducto LIKE ?",[codigoBuscar, codigoBuscar]);
+        return await this.consulta("SELECT * FROM producto WHERE codigoBarraProducto LIKE ?",[codigoBuscar]);
     }
     async listarTodos(){
         return await this.consulta(`SELECT *
@@ -13,12 +13,19 @@ class Productos extends mysql{
                                     INNER JOIN familia F
                                     on(P.Familia_idFamilia=F.idFamilia)`);
     }
-    async listar(pagSiguiente, cantPorPag, search){
+    async listar(pagSiguiente, cantPorPag, search, paraVentas = false){
         var where = ''; 
         var parametrosBuscar = [];
+        if(paraVentas===true){
+            where = ' WHERE Estado_idEstado = 1'; 
+        }
         if(search){
             parametrosBuscar = [search,'%'+search+'%'];
-            where = ` WHERE codigoBarraProducto LIKE ? OR nombreProducto LIKE ? `;
+            if(paraVentas===true){
+                where = ` WHERE (codigoBarraProducto LIKE ? OR nombreProducto LIKE ?) AND Estado_idEstado = 1`;
+            }else{
+                where = ` WHERE codigoBarraProducto LIKE ? OR nombreProducto LIKE ? `;
+            }
             pagSiguiente = 1;//Cuando se realiza una busqueda comienza con la pagina 1
         }
         let resp = {
@@ -46,6 +53,20 @@ class Productos extends mysql{
                                 +",codigoBarraProducto= ? "
                     +" WHERE idProducto = ? ";
         return this.consulta(sql,[nombreProducto,valorProducto,cantidadProducto,Estado_idEstado,Familia_idFamilia,precioVentaProducto,codigoBarraProducto,idProducto]);
+    }
+    descontarProducto(idProducto, cantidad){
+        const sql = "UPDATE producto "
+                                +"SET "
+                                +"cantidadProducto = cantidadProducto - ? "
+                    +" WHERE idProducto = ? ";
+        return this.consulta(sql,[parseInt(cantidad),idProducto]);
+    }
+    agregarProducto(idProducto, cantidad){
+        const sql = "UPDATE producto "
+                                +"SET "
+                                +"cantidadProducto = cantidadProducto + ? "
+                    +" WHERE idProducto = ? ";
+        return this.consulta(sql,[parseInt(cantidad),idProducto]);
     }
     async eliminar(idProducto){
         const sql = "DELETE FROM `producto` WHERE `producto`.`idProducto` = ? ";

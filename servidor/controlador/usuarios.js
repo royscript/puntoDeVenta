@@ -17,6 +17,14 @@ router.post("/listar",(req, res)=>{
                     res
                     );
 });
+router.post("/buscar-usuario",(req, res)=>{
+    const { body } = req;
+    const { rutUsuario }= body;
+    RouterRespuestas(
+                    async ()=> await usuario.buscarPorRut(rutUsuario),
+                    res
+                    );
+});
 router.put("/insertar",(req, res)=>{
     const { body } = req;
     const { nombreUsuario,apellidoUsuario,emailUsuario,rutUsuario,contrasenaUsuario,direccionUsuario,telefonoUsuario,Permiso_idPermiso }= body;

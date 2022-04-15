@@ -17,36 +17,18 @@ import SelectSearchA from "../components/formulario/SelectSearch";
 const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
     let { idCompraOrigen } = useParams();//Capturamos el id de la compra
     const [titulo, setTitulo] = useState();
+    const [familiaProducto, setFamiliaProducto] = useState([]);
+    const [estado, setEstado] = useState([]);
     const [respuestaConsulta, setRespuestaConsulta] = useState();
-    const [compras, setCompra] = useState([]);
+    const [productos, setProductos] = useState([]);
     const [valoresFormulario, setValoresFormulario] = useState(null);
     const [botonPresionado,setBotonPresionado] = useState(null);
     const [pagSiguiente, setPagSiguiente] = useState(1);
     const [cantPorPag, setCantPorPag] = useState(5);
-    const [producto, setProducto] = useState([]);
-    const [familia, setFamilia] = useState([]);
-    const listarCompras = async (search)=>{
+    const listarDetalleCompra = async (search)=>{
         try {
-            const resultSet = await axios.post('/compra/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search});
-            setCompra(resultSet.data);
-        } catch (error) {
-            setRespuestaConsulta(
-                <div className="alert alert-danger" role="alert">
-                    {error}
-                    <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>);
-        }
-        
-    }
-    const eliminarCompra = async (id)=>{
-        try {
-            const resultSet = await axios.post('/compra/eliminar', {id});
-            setRespuestaConsulta(
-                <div className="alert alert-danger" role="alert">
-                    Producto <b>Eliminado</b> Correscamente
-                    <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>);
-            listarCompras();
+            const resultSet = await axios.post('/detalle-compra/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search});
+            setProductos(resultSet.data);
         } catch (error) {
             setRespuestaConsulta(
                 <div className="alert alert-danger" role="alert">
@@ -58,47 +40,75 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
     }
     const listarFamiliaProducto = async ()=>{
         const resultSet = await axios.get('/familia-producto/listar');
-        setFamilia(resultSet.data);
+        setFamiliaProducto(resultSet.data);
     }
-    const buscarProducto = async() =>{
+    const listarEstado = async ()=>{
+        const resultSet = await axios.get('/estado/listar');
+        setEstado(resultSet.data);
+    }
+    const eliminarProducto = async (id)=>{
         try {
-            const resultSet = await axios.get('/productos/listar');
-            console.log(resultSet);
-            var arrayCompleto = [];
-            familia.forEach(fam => {
-                var arrayProductos = [];
-                resultSet.data.forEach((prod, key)=>{
-                    if(fam.idFamilia==prod.Familia_idFamilia){
-                        arrayProductos.push({ name: prod.nombreProducto, value: prod.idProducto });
-                    }
-                });
-                arrayCompleto.push({
-                    type: "group",
-                    name: fam.nombreFamilia,
-                    items: arrayProductos
-                });
-            });
-            console.log(arrayCompleto);
-            setProducto(arrayCompleto);
+            const resultSet = await axios.post('/detalle-compra/eliminar', {id});
+            setRespuestaConsulta(
+                <div className="alert alert-danger" role="alert">
+                    Producto <b>Eliminado</b> Correscamente
+                    <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>);
+            listarDetalleCompra();
         } catch (error) {
-            
+            setRespuestaConsulta(
+                <div className="alert alert-danger" role="alert">
+                    {error}
+                    <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>);
+        }
+        
+    }
+    const buscarEstado =(idEstado) =>{
+        if(estado.length==0) return idEstado;
+        return estado.find((e)=>e.idEstado==idEstado).nombreEstado;
+    }
+    const buscarProducto = async (codigo)=>{
+        try {
+            const resultSet = await axios.post('/productos/buscar', {codigo});
+            return resultSet.data;            
+        } catch (error) {
+            return false;
         }
     }
+    const actualizarStocks = ()=>{
+        axios.put('/detalle-compra/actualizar-stocks', { Compra_idCompra : idCompraOrigen })
+            .then(res => {
+                if(res.status===200){
+                    listarDetalleCompra("");
+                    setRespuestaConsulta(
+                        <div className="alert alert-success" role="alert">
+                            Stock Actualizado
+                            <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>);
+                }
+        }, error =>{
+            if (error.response.status === 401) {
+                setRespuestaConsulta(
+                    <div className="alert alert-danger" role="alert">
+                        Error : {error}
+                        <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>);
+            }
+        })
+    }
     useEffect(()=>{
-        buscarProducto();
-    },[familia]);
-    useEffect(()=>{
-        listarCompras();
+        listarDetalleCompra();
     },[pagSiguiente,cantPorPag])
     useEffect(()=>{
-        listarFamiliaProducto();
         setTitulo("Detalle Compra");
         //conseguirPermisos();
         //console.log(usuario);
-        listarCompras();
-        buscarProducto();
+        listarDetalleCompra();
+        listarEstado();
+        listarFamiliaProducto();
+
     },[])
-    
     return(
         <>
         <NavBar usuario={usuario.nombreUsuario+" "+usuario.apellidoUsuario} logOut={logOut}/>
@@ -110,42 +120,54 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                         <HeaderContainer titulo={titulo}/>
                         {children}
                         <Formik
-                            initialValues={valoresFormulario || { idProducto : '', articleType: 'other'}}
+                            initialValues={valoresFormulario || {idDetalleCompra : idCompraOrigen, Compra_idCompra : '', idProducto : '', nombreProducto : '', valorProducto : '', cantidad : '', Estado_idEstado : '', Familia_idFamilia : '', precioVentaProducto : '', codigoBarraProducto : ''}}
                             enableReinitialize
                             validate={
-                                (values) => {
+                                async (values) => {
                                     const errors = {}
-                                    if(!values.FechaCompra) {
-                                        errors.FechaCompra = 'Requerido'
-                                    } else if (values.FechaCompra.length < 4) {
-                                        errors.FechaCompra = 'Ingresa la fecha de la compra'
+                                    if(!values.nombreProducto) {
+                                        errors.nombreProducto = 'Requerido'
+                                    } else if (values.nombreProducto.length < 5) {
+                                        errors.nombreProducto = 'Ingresa el Nombre del Producto'
                                     }
-                                    if(!values.FechaRegistroCompra) {
-                                        errors.FechaRegistroCompra = 'Requerido'
-                                    } else if (values.FechaRegistroCompra.length < 5) {
-                                        errors.FechaRegistroCompra = 'Ingresa la fecha cuando se hizo la compra'
+                                    if(!values.valorProducto) {
+                                        errors.valorProducto = 'Requerido'
+                                    } else if (values.valorProducto.length < 2) {
+                                        errors.valorProducto = 'Ingresa el valor del producto'
                                     }
-                                    if(!values.numeroDocumentoCompra) {
-                                        errors.numeroDocumentoCompra = 'Requerido'
-                                    } else if (values.numeroDocumentoCompra.length < 3) {
-                                        errors.numeroDocumentoCompra = 'Ingresa el numero de documento de la compra'
+                                    if(!values.cantidad) {
+                                        errors.cantidad = 'Requerido'
+                                    } else if (values.cantidad.length < 1) {
+                                        errors.cantidad = 'Ingresa la cantidad de productos'
                                     }
-                                    if(!values.totalCompra) {
-                                        errors.totalCompra = 'Requerido'
-                                    } else if (values.totalCompra.length < 2) {
-                                        errors.totalCompra = 'Ingresa el total de la compra'
+                                    if(!values.precioVentaProducto) {
+                                        errors.precioVentaProducto = 'Requerido'
+                                    } else if (values.precioVentaProducto.length < 1) {
+                                        errors.precioVentaProducto = 'Ingresa el precio de venta'
                                     }
-                                    if(!values.impuestoCompra) {
-                                        errors.impuestoCompra = 'Requerido'
-                                    } else if (values.impuestoCompra.length < 5) {
-                                        errors.impuestoCompra = 'Ingresa el impuesto de la compra'
+                                    if(!values.Estado_idEstado) {
+                                        errors.Estado_idEstado = 'Requerido'
                                     }
-                                    if(!values.DocumentoCompra_idDocumentoCompra) {
-                                        errors.DocumentoCompra_idDocumentoCompra = 'Selecciona el tipo de documento'
+                                    if(!values.Familia_idFamilia){
+                                        errors.Familia_idFamilia = 'Requerido'
                                     }
-                                    if(!values.Proveedor_idProveedor) {
-                                        errors.Proveedor_idProveedor = 'Selecciona el proveedor'
+                                    
+                                    if(!values.codigoBarraProducto){
+                                        errors.codigoBarraProducto = 'Requerido'
+                                    }else if(values.codigoBarraProducto.length<1){
+                                        errors.codigoBarraProducto = 'Ingrese el codigo de barras';
+                                    }else{
+                                        /*const consultarProducto = await buscarProducto(values.codigoBarraProducto);
+                                        if(!consultarProducto){
+                                            //console.log(!consultarProducto);
+                                        }else{//Si hay producto
+                                            //console.log(consultarProducto[0]);
+                                            setValoresFormulario(consultarProducto[0]);
+                                        }*/
+                                        
                                     }
+                                    console.log(values);
+                                    console.log(errors);
                                     return errors
                                 }
                             }
@@ -153,13 +175,20 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                 props.handleFormChange(name, value); // call some method from parent 
                             }}
                             onSubmit={async (values,{resetForm,submitForm})=>{
-                                if(botonPresionado=="Guardar"){
-                                    axios.put('/compra/insertar', { FechaRegistroCompra: values.FechaRegistroCompra, numeroDocumentoCompra: values.numeroDocumentoCompra, totalCompra: values.totalCompra, impuestoCompra: values.impuestoCompra, Usuario_idUsuario: usuario.idUsuario, DocumentoCompra_idDocumentoCompra: values.DocumentoCompra_idDocumentoCompra, Proveedor_idProveedor: values.Proveedor_idProveedor})
+                                if(botonPresionado==="Guardar"){
+                                    axios.put('/detalle-compra/insertar', { nombreProducto : values.nombreProducto, 
+                                                                        valorProducto : values.valorProducto, 
+                                                                        cantidad : values.cantidad, 
+                                                                        Estado_idEstado : values.Estado_idEstado,
+                                                                        Familia_idFamilia : values.Familia_idFamilia,
+                                                                        precioVentaProducto : values.precioVentaProducto,
+                                                                        codigoBarraProducto : values.codigoBarraProducto,
+                                                                        Compra_idCompra : idCompraOrigen })
                                         .then(res => {
                                             if(res.status===200){
                                                 resetForm({values: ''});
                                                 setValoresFormulario(null);
-                                                listarCompras();
+                                                listarDetalleCompra();
                                                 setRespuestaConsulta(
                                                     <div className="alert alert-success" role="alert">
                                                         Datos Ingresados Correctamente
@@ -175,13 +204,21 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                                 </div>);
                                         }
                                     }) 
-                                }else{
-                                    axios.put('/compra/editar', {  idCompra: values.idCompra, FechaCompra: values.FechaCompra, FechaRegistroCompra: values.FechaRegistroCompra, numeroDocumentoCompra: values.numeroDocumentoCompra, totalCompra: values.totalCompra, impuestoCompra: values.impuestoCompra, Usuario_idUsuario: usuario.idUsuario, DocumentoCompra_idDocumentoCompra: values.DocumentoCompra_idDocumentoCompra, Proveedor_idProveedor: values.Proveedor_idProveedor})
+                                }else if(botonPresionado==='Editar'){
+                                    axios.put('/detalle-compra/editar', { nombreProducto : values.nombreProducto, 
+                                        valorProducto : values.valorProducto, 
+                                        cantidad : values.cantidad, 
+                                        Estado_idEstado : values.Estado_idEstado,
+                                        Familia_idFamilia : values.Familia_idFamilia,
+                                        precioVentaProducto : values.precioVentaProducto,
+                                        codigoBarraProducto : values.codigoBarraProducto,
+                                        idProducto : values.idProducto,
+                                        Compra_idCompra : idCompraOrigen })
                                     .then(res => {
                                         if(res.status===200){
                                             resetForm({values: ''});
                                             setValoresFormulario(null);
-                                            listarCompras();
+                                            listarDetalleCompra();
                                             setRespuestaConsulta(
                                                 <div className="alert alert-warning" role="alert">
                                                     Datos <b>modificados</b> Correctamente
@@ -200,6 +237,7 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                                
                             }}
                         >
+                            {({ setFieldValue }) => (
                             <Form>
                             <div className="accordion" id="accordionExample">
                                 <div className="accordion-item">
@@ -212,27 +250,43 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                     <div className="accordion-body">
                                         <div className="card" style={{"width": "100%"}}>
                                             <div className="card-body">
-                                                <InputReadOnly name="idCompra" label="Id Compra"/>
-                                                <Input name="FechaCompra" label="Fecha" type="date" readOnly/>
-                                                <Input name="FechaRegistroCompra" label="Fecha de la compra" type="date"/>
-                                                <Input name="numeroDocumentoCompra" label="Numero Documento Compra" type="text"/>
-                                                <Input name="totalCompra" label="Total de la Compra" type="number"/>
-                                                <Input name="impuestoCompra" label="Impuesto de la Compra" type="number"/>
-                                                
-                                                <SelectSearchA data={producto} 
-                                                    placeHolder={"Seleccione el producto"} 
-                                                    name={"idProducto"}
-                                                    value={13}
-                                                    handleChange={(...args)=>{
-                                                        console.log("ARGS:", args);
+                                                <InputReadOnly name="idProducto" label="Id Producto"/>
+                                                <Input name="codigoBarraProducto" label="Codigo de Barras Producto" type="text" 
+                                                    onChange={ async (e, value) => {
+                                                        setFieldValue("codigoBarraProducto", e.target.value);
+                                                        const consultarProducto = await buscarProducto(e.target.value);
+                                                        if(consultarProducto.length>0){
+                                                            setFieldValue("idProducto", consultarProducto[0].idProducto);
+                                                            setFieldValue("nombreProducto", consultarProducto[0].nombreProducto);
+                                                            setFieldValue("valorProducto", consultarProducto[0].valorProducto);
+                                                            setFieldValue("precioVentaProducto", consultarProducto[0].precioVentaProducto);
+                                                            setFieldValue("Estado_idEstado", consultarProducto[0].Estado_idEstado);
+                                                            setFieldValue("Familia_idFamilia", consultarProducto[0].Familia_idFamilia);
+                                                        }
                                                     }}/>
+                                                <Input name="nombreProducto" label="Nombre del producto" type="text"/>
+                                                <Input name="valorProducto" label="¿Cuánto le costo el producto?" type="number"/>
+                                                <Input name="precioVentaProducto" label="¿A Cuánto lo venderá?" type="number"/>
+                                                <Input name="cantidad" label="Cantidad del producto" type="number"/>
+                                                <Select name="Estado_idEstado" label="Estado del Producto">
+                                                    <option>Seleccione</option>
+                                                    {estado.map((value,key)=><option key={key+'-estado'} value={value.idEstado}>{value.nombreEstado}</option>)}
+                                                </Select>
                                                 
+                                                <Select name="Familia_idFamilia" label="Familia del Producto">
+                                                    <option>Seleccione</option>
+                                                    {familiaProducto.map((value,key)=><option key={key+'-familiaProducto'} value={value.idFamilia}>{value.nombreFamilia}</option>)}
+                                                </Select>
                                             </div>
                                             <div className="card-footer">
                                                 <div className="row">
                                                     <div className="form-group">
                                                         <div className="input-group">
                                                             <Boton label={"Guardar"} type={"Submit"} className="btn btn-success" onClick={()=>setBotonPresionado("Guardar")}/>
+                                                            <button type="button" className="btn btn-danger"
+                                                            onClick={()=>{
+                                                                actualizarStocks();
+                                                            }}>Actualizar Stocks</button>
                                                             <Boton label={"Editar"} type={"Submit"} className="btn btn-warning" onClick={()=>setBotonPresionado("Editar")}/>
                                                         </div>
                                                     </div>
@@ -249,30 +303,30 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                 <TablePagination
                                 head={
                                     <tr>
-                                        <th>#</th>
-                                        <th>Fecha Compra</th>
-                                        <th>Fecha Registro Compra</th>
-                                        <th>Numero Documento Compra</th>
-                                        <th>Total Compra</th>
-                                        <th>Impuesto Compra</th>
-                                        <th>Usuario</th>
-                                        <th>Documento Compra</th>
-                                        <th>Proveedor</th>
+                                        <th>Codigo</th>
+                                        <th>Producto</th>
+                                        <th>Valor</th>
+                                        <th>Cantidad</th>
+                                        <th>Stock</th>
+                                        <th>Precio Venta</th>
+                                        <th>Estado</th>
                                         <th>Accion</th>
                                     </tr>
                                 }
                                 mostrarDatos={
                                     (value,index)=>
                                     <tr key={index+'fila'}>
-                                        <td>{value.idCompra}</td>
-                                        <td>{value.FechaCompra_formateada}</td>
-                                        <td>{value.FechaRegistroCompra_formateada}</td>
-                                        <td>{value.numeroDocumentoCompra}</td>
-                                        <td>$ {formatoDinero(value.totalCompra)}</td>
-                                        <td>$ {formatoDinero(value.impuestoCompra)}</td>
-                                        <td>{value.nombreUsuario} {value.apellidoUsuario}</td>
-                                        <td>{(value.DocumentoCompra_idDocumentoCompra)}</td>
-                                        <td>{(value.Proveedor_idProveedor)}</td>
+                                        <td>{value.codigoBarraProducto}</td>
+                                        <td>{value.nombreProducto}</td>
+                                        <td>$ {formatoDinero(value.valorDetalleCompra)}</td>
+                                        <td>{formatoDinero(value.cantidadDetalleCompra)}</td>
+                                        <td>{formatoDinero(value.cantidadProducto)}</td>
+                                        <td>$ {formatoDinero(value.precioVentaProducto)}</td>
+                                        <td>
+                                            <span className={value.Estado_idEstado==1?"badge bg-success":"badge bg-danger"}>
+                                                {buscarEstado(value.Estado_idEstado)}
+                                            </span>
+                                        </td>
                                         <td>
                                             <div className="btn-group" role="group">
                                                 <button type="button" className="btn btn-warning" onClick={
@@ -284,15 +338,10 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                                         <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                                                     </svg>
                                                 </button>
-                                                <Link to={"/detalle-compra/"+value.idCompra} className="btn btn-success">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-cart4" viewBox="0 0 16 16">
-                                                        <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l.5 2H5V5H3.14zM6 5v2h2V5H6zm3 0v2h2V5H9zm3 0v2h1.36l.5-2H12zm1.11 3H12v2h.61l.5-2zM11 8H9v2h2V8zM8 8H6v2h2V8zM5 8H3.89l.5 2H5V8zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
-                                                    </svg>
-                                                </Link>
                                                 <button type="button" className="btn btn-danger" onClick={
                                                     ()=>{
-                                                        var resp = window.confirm(`Desea eliminar esta Compra ${value.numeroDocumentoCompra}`);
-                                                        if(resp) eliminarCompra(value.idCompra);
+                                                        var resp = window.confirm(`Desea eliminar este producto? ${value.nombreProducto}`);
+                                                        if(resp) eliminarProducto(value.idProducto);
                                                     }
                                                 }>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash-fill" viewBox="0 0 16 16">
@@ -303,13 +352,14 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                         </td>
                                     </tr>
                                 }
-                                data={compras}
+                                data={productos}
                                 setCantPorPag={setCantPorPag}
                                 setPagSiguiente={setPagSiguiente}
-                                funcionDeDatos={listarCompras}
-                                placeHolderSearch="Buscar por numero de documento y proveedor"
+                                funcionDeDatos={listarDetalleCompra}
+                                placeHolderSearch="Buscar por Codigo de Barra y nombres de productos"
                             />
                             </Form>
+                            )}
                         </Formik>
                         <div>
                             
