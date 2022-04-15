@@ -16,6 +16,7 @@ import Caja from './router/Caja';
 import TipoVenta from './router/TipoVenta';
 import DocumentoDeVenta from './router/DocumentoDeVenta';
 import MedioDePago from './router/MedioDePago';
+import './dashboard.css';
 function App() {
     const [usuario, setUsuario] = useState();
     const [sesion, setSesion] = useState(null);

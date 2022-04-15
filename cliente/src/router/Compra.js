@@ -10,7 +10,6 @@ import Select from "../components/formulario/Select";
 import TablePagination from "../components/tablas/TablePagination";
 import InputReadOnly from "../components/formulario/InputReadOnly";
 import formatoDinero from "../funciones/formatoDinero";
-import FeatherIcon from 'feather-icons-react';
 import { Link } from "react-router-dom";
 
 const Compra = ({children, logOut, conseguirPermisos, usuario})=>{
@@ -36,7 +35,7 @@ const Compra = ({children, logOut, conseguirPermisos, usuario})=>{
     }
     const eliminarCompra = async (id)=>{
         try {
-            const resultSet = await axios.post('/compra/eliminar', {id});
+            await axios.post('/compra/eliminar', {id});
             setRespuestaConsulta(
                 <div className="alert alert-danger" role="alert">
                     Producto <b>Eliminado</b> Correscamente
@@ -58,8 +57,8 @@ const Compra = ({children, logOut, conseguirPermisos, usuario})=>{
         setDocumento(resultSet.data);
     }
     const buscarTipoDocumento =(DocumentoCompra_idDocumentoCompra) =>{
-        if(documento.length==0) return DocumentoCompra_idDocumentoCompra;
-        return documento.find((e)=>e.idDocumentoCompra==DocumentoCompra_idDocumentoCompra).nombreDocumentoCompra;
+        if(documento.length===0) return DocumentoCompra_idDocumentoCompra;
+        return documento.find((e)=>e.idDocumentoCompra===DocumentoCompra_idDocumentoCompra).nombreDocumentoCompra;
     }
     const [proveedor, setProveedor] = useState([]);
     const listarProveedor = async ()=>{
@@ -67,8 +66,8 @@ const Compra = ({children, logOut, conseguirPermisos, usuario})=>{
         setProveedor(resultSet.data);
     }
     const buscarProveedor =(Proveedor_idProveedor) =>{
-        if(proveedor.length==0) return Proveedor_idProveedor;
-        return proveedor.find((e)=>e.idProveedor==Proveedor_idProveedor).razonSocialProveedor;
+        if(proveedor.length===0) return Proveedor_idProveedor;
+        return proveedor.find((e)=>e.idProveedor===Proveedor_idProveedor).razonSocialProveedor;
     }
     useEffect(()=>{
         listarCompras();
@@ -136,7 +135,7 @@ const Compra = ({children, logOut, conseguirPermisos, usuario})=>{
                                 props.handleFormChange(name, value); // call some method from parent 
                             }}
                             onSubmit={async (values,{resetForm,submitForm})=>{
-                                if(botonPresionado=="Guardar"){
+                                if(botonPresionado==="Guardar"){
                                     axios.put('/compra/insertar', { FechaRegistroCompra: values.FechaRegistroCompra, numeroDocumentoCompra: values.numeroDocumentoCompra, totalCompra: values.totalCompra, impuestoCompra: values.impuestoCompra, Usuario_idUsuario: usuario.idUsuario, DocumentoCompra_idDocumentoCompra: values.DocumentoCompra_idDocumentoCompra, Proveedor_idProveedor: values.Proveedor_idProveedor})
                                         .then(res => {
                                             if(res.status===200){
@@ -240,6 +239,7 @@ const Compra = ({children, logOut, conseguirPermisos, usuario})=>{
                                         <th>Usuario</th>
                                         <th>Documento Compra</th>
                                         <th>Proveedor</th>
+                                        <th>Stock Actualizado</th>
                                         <th>Accion</th>
                                     </tr>
                                 }
@@ -255,6 +255,13 @@ const Compra = ({children, logOut, conseguirPermisos, usuario})=>{
                                         <td>{value.nombreUsuario} {value.apellidoUsuario}</td>
                                         <td>{buscarTipoDocumento(value.DocumentoCompra_idDocumentoCompra)}</td>
                                         <td>{buscarProveedor(value.Proveedor_idProveedor)}</td>
+                                        <td>
+                                            {
+                                                <span className={value.stockActualizado==='SI'?"badge bg-success":"badge bg-danger"}>
+                                                    {value.stockActualizado==='SI'?"Actualizado":"Sin Actualizar"}
+                                                </span>
+                                            }
+                                        </td>
                                         <td>
                                             <div className="btn-group" role="group">
                                                 <button type="button" className="btn btn-warning" onClick={

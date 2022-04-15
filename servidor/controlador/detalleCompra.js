@@ -35,9 +35,9 @@ router.put("/actualizar-stocks",(req, res)=>{
 });
 router.put("/editar",(req, res)=>{
     const { body } = req;
-    const { cantidadDetalleCompra, valorDetalleCompra, Producto_idProducto, Compra_idCompra,idDetalleCompra }= body;
+    const { nombreProducto, valorProducto, cantidad, Estado_idEstado, Familia_idFamilia, precioVentaProducto, codigoBarraProducto, Compra_idCompra,idDetalleCompra }= body;
     RouterRespuestas(
-                    async ()=> await detalleCompra.editar(cantidadDetalleCompra, valorDetalleCompra, Producto_idProducto, Compra_idCompra,idDetalleCompra),
+                    async ()=> await detalleCompra.editar(nombreProducto, valorProducto, cantidad, Estado_idEstado, Familia_idFamilia, precioVentaProducto, codigoBarraProducto, Compra_idCompra,idDetalleCompra),
                     res
                     );
 });

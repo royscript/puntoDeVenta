@@ -74,7 +74,7 @@ const SidebarMenu = ({seccion})=>{
                 </ul>
 
                 <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-                <span>Saved reports</span>
+                <span>Reportes</span>
                 <div className="link-secondary" href="#" aria-label="Add a new report">
                     <FeatherIcon icon="plus-circle" />
                 </div>
@@ -83,25 +83,7 @@ const SidebarMenu = ({seccion})=>{
                 <li className="nav-item">
                     <div className="nav-link" href="#">
                     <FeatherIcon icon="file-text" />
-                    Current month
-                    </div>
-                </li>
-                <li className="nav-item">
-                    <div className="nav-link" href="#">
-                    <FeatherIcon icon="file-text" />
-                    Last quarter
-                    </div>
-                </li>
-                <li className="nav-item">
-                    <div className="nav-link" href="#">
-                    <FeatherIcon icon="file-text" />
-                    Social engagement
-                    </div>
-                </li>
-                <li className="nav-item">
-                    <div className="nav-link" href="#">
-                    <FeatherIcon icon="file-text" />
-                    Year-end sale
+                    Ventas
                     </div>
                 </li>
                 </ul>

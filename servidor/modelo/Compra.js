@@ -20,7 +20,8 @@ class Compra extends mysql{
             datos : await this.consulta(`SELECT DATE_FORMAT(FechaCompra,'%d/%m/%Y') as FechaCompra_formateada, DATE_FORMAT(FechaCompra,'%Y-%m-%d') as FechaCompra, 
                                                 DATE_FORMAT(FechaRegistroCompra,'%d/%m/%Y') as FechaRegistroCompra_formateada,DATE_FORMAT(FechaRegistroCompra,'%Y-%m-%d') as FechaRegistroCompra,
                                                 idUsuario, nombreUsuario, apellidoUsuario,
-                                                idCompra, numeroDocumentoCompra, totalCompra, impuestoCompra, Usuario_idUsuario, DocumentoCompra_idDocumentoCompra, Proveedor_idProveedor
+                                                idCompra, numeroDocumentoCompra, totalCompra, impuestoCompra, Usuario_idUsuario, DocumentoCompra_idDocumentoCompra, Proveedor_idProveedor,
+                                                stockActualizado
                                             FROM compra C
                                             INNER JOIN usuario U
                                             ON(C.Usuario_idUsuario=U.idUsuario)`+where+" "+this.paginador(pagSiguiente, cantPorPag),parametrosBuscar),
@@ -48,6 +49,13 @@ class Compra extends mysql{
                                 +"Proveedor_idProveedor= ? "
                     +" WHERE idCompra = ? ";
         return this.consulta(sql,[FechaCompra, FechaRegistroCompra, numeroDocumentoCompra, totalCompra, impuestoCompra, Usuario_idUsuario, DocumentoCompra_idDocumentoCompra, Proveedor_idProveedor,idCompra]);
+    }
+    stockActualizado(idCompra, estado){
+        const sql = "UPDATE compra "
+                                +"SET "
+                                +"stockActualizado= ? "
+                    +" WHERE idCompra = ? ";
+        return this.consulta(sql,[estado, idCompra]);
     }
     async eliminar(idCompra){
         const sql = "DELETE FROM `compra` WHERE `idCompra` = ? ";

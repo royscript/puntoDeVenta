@@ -10,9 +10,7 @@ import Select from "../components/formulario/Select";
 import TablePagination from "../components/tablas/TablePagination";
 import InputReadOnly from "../components/formulario/InputReadOnly";
 import formatoDinero from "../funciones/formatoDinero";
-import FeatherIcon from 'feather-icons-react';
-import { Link, useParams } from "react-router-dom";
-import SelectSearchA from "../components/formulario/SelectSearch";
+import { useParams } from "react-router-dom";
 
 const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
     let { idCompraOrigen } = useParams();//Capturamos el id de la compra
@@ -48,10 +46,10 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
     }
     const eliminarProducto = async (id)=>{
         try {
-            const resultSet = await axios.post('/detalle-compra/eliminar', {id});
+            await axios.post('/detalle-compra/eliminar', {id});
             setRespuestaConsulta(
                 <div className="alert alert-danger" role="alert">
-                    Producto <b>Eliminado</b> Correscamente
+                    Producto <b>Eliminado</b> Correctamente
                     <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>);
             listarDetalleCompra();
@@ -65,8 +63,8 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
         
     }
     const buscarEstado =(idEstado) =>{
-        if(estado.length==0) return idEstado;
-        return estado.find((e)=>e.idEstado==idEstado).nombreEstado;
+        if(estado.length===0) return idEstado;
+        return estado.find((e)=>e.idEstado===idEstado).nombreEstado;
     }
     const buscarProducto = async (codigo)=>{
         try {
@@ -107,7 +105,6 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
         listarDetalleCompra();
         listarEstado();
         listarFamiliaProducto();
-
     },[])
     return(
         <>
@@ -212,8 +209,8 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                         Familia_idFamilia : values.Familia_idFamilia,
                                         precioVentaProducto : values.precioVentaProducto,
                                         codigoBarraProducto : values.codigoBarraProducto,
-                                        idProducto : values.idProducto,
-                                        Compra_idCompra : idCompraOrigen })
+                                        Compra_idCompra : idCompraOrigen,
+                                        idDetalleCompra : values.idDetalleCompra })
                                     .then(res => {
                                         if(res.status===200){
                                             resetForm({values: ''});
@@ -251,6 +248,7 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                         <div className="card" style={{"width": "100%"}}>
                                             <div className="card-body">
                                                 <InputReadOnly name="idProducto" label="Id Producto"/>
+                                                <InputReadOnly name="idDetalleCompra" label="Id Detalle Compra"/>
                                                 <Input name="codigoBarraProducto" label="Codigo de Barras Producto" type="text" 
                                                     onChange={ async (e, value) => {
                                                         setFieldValue("codigoBarraProducto", e.target.value);
@@ -323,7 +321,7 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                         <td>{formatoDinero(value.cantidadProducto)}</td>
                                         <td>$ {formatoDinero(value.precioVentaProducto)}</td>
                                         <td>
-                                            <span className={value.Estado_idEstado==1?"badge bg-success":"badge bg-danger"}>
+                                            <span className={value.Estado_idEstado===1?"badge bg-success":"badge bg-danger"}>
                                                 {buscarEstado(value.Estado_idEstado)}
                                             </span>
                                         </td>
@@ -341,7 +339,7 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                                 <button type="button" className="btn btn-danger" onClick={
                                                     ()=>{
                                                         var resp = window.confirm(`Desea eliminar este producto? ${value.nombreProducto}`);
-                                                        if(resp) eliminarProducto(value.idProducto);
+                                                        if(resp) eliminarProducto(value.idDetalleCompra);
                                                     }
                                                 }>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash-fill" viewBox="0 0 16 16">
