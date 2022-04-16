@@ -122,7 +122,7 @@ const Usuarios = ({children, logOut, conseguirPermisos, usuario})=>{
                                             const usuarioEncontrado = resp.data[0];
                                             if(resp.data.length>0){
                                                 //Si el rut lo esta usando otra persona con un id diferente al del que estamos modificando
-                                                if(usuarioEncontrado.rutUsuario===values.rutUsuario && values.idUsuario!=usuarioEncontrado.idUsuario){
+                                                if(usuarioEncontrado.rutUsuario===values.rutUsuario && values.idUsuario!==usuarioEncontrado.idUsuario){
                                                     errors.rutUsuario = 'El rut ingresado corresponde a otro usuario';
                                                 }
                                             }
