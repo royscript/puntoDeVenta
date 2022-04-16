@@ -23,6 +23,14 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
     const [botonPresionado,setBotonPresionado] = useState(null);
     const [pagSiguiente, setPagSiguiente] = useState(1);
     const [cantPorPag, setCantPorPag] = useState(5);
+    const buscarProducto = async (codigo)=>{
+        try {
+            return await axios.post('/productos/buscar', {codigo});
+        } catch (error) {
+            return null;
+        }
+        
+    }
     const listarProductos = async (search)=>{
         try {
             const resultSet = await axios.post('/productos/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search});
@@ -92,7 +100,7 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                             initialValues={valoresFormulario || {idProducto : '', nombreProducto : '', valorProducto : '', cantidadProducto : '', Estado_idEstado : '', Familia_idFamilia : '', precioVentaProducto : '', codigoBarraProducto : ''}}
                             enableReinitialize
                             validate={
-                                (values) => {
+                                async (values) => {
                                     const errors = {}
                                     if(!values.nombreProducto) {
                                         errors.nombreProducto = 'Requerido'
@@ -124,6 +132,23 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                         errors.codigoBarraProducto = 'Requerido'
                                     }else if(values.codigoBarraProducto.length<1){
                                         errors.codigoBarraProducto = 'Ingrese el codigo de barras';
+                                    }else{
+                                        const resp = await buscarProducto(values.codigoBarraProducto);
+                                        //La unica forma de saber si estamos en modificar es mediante el idProducto
+                                        //Si existe el idProducto es porque es modificar, en caso contrario es agregar
+                                        if(values.idProducto===null || values.idProducto===''){
+                                            if(resp.data.length>0){
+                                                errors.codigoBarraProducto = 'El codigo de barras esta siendo utilizado por otro producto';
+                                            }
+                                        }else{
+                                            const productoEncontrado = resp.data[0];
+                                            if(resp.data.length>0){
+                                                //Si el codigoBarra lo esta usando otra persona con un id diferente al del que estamos modificando
+                                                if(productoEncontrado.codigoBarraProducto===values.codigoBarraProducto && values.idProducto!==productoEncontrado.idProducto){
+                                                    errors.codigoBarraProducto = 'El codigo de barras esta siendo utilizado por otro producto';
+                                                }
+                                            }
+                                        }
                                     }
                                     return errors
                                 }
