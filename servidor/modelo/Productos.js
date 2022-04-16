@@ -13,20 +13,34 @@ class Productos extends mysql{
                                     INNER JOIN familia F
                                     on(P.Familia_idFamilia=F.idFamilia)`);
     }
-    async listar(pagSiguiente, cantPorPag, search, paraVentas = false){
+    async listar(pagSiguiente, cantPorPag, search, paraVentas = false, idFamilia = null){
         var where = ''; 
         var parametrosBuscar = [];
-        if(paraVentas===true){
-            where = ' WHERE Estado_idEstado = 1'; 
-        }
         if(search){
             parametrosBuscar = [search,'%'+search+'%'];
             if(paraVentas===true){
-                where = ` WHERE (codigoBarraProducto LIKE ? OR nombreProducto LIKE ?) AND Estado_idEstado = 1`;
+                if(idFamilia!=='' && idFamilia!==null){//Si se busca con el idFamilia
+                    where = ` WHERE (codigoBarraProducto LIKE ? OR nombreProducto LIKE ?) AND Estado_idEstado = 1 AND Familia_idFamilia = ${idFamilia}`;
+                }else{//Si no se busca con el idFamilia
+                    where = ` WHERE (codigoBarraProducto LIKE ? OR nombreProducto LIKE ?) AND Estado_idEstado = 1`;
+                }
             }else{
                 where = ` WHERE codigoBarraProducto LIKE ? OR nombreProducto LIKE ? `;
             }
             pagSiguiente = 1;//Cuando se realiza una busqueda comienza con la pagina 1
+        }else{
+            if(idFamilia){
+                if(idFamilia!=='' && idFamilia!==null && paraVentas===true){//Si se busca con el idFamilia
+                    //Esta parte es para ventas donde solamente se muestran los productos activos
+                    where = ` WHERE Estado_idEstado = 1 AND Familia_idFamilia = ${idFamilia}`;
+                }else{//Esta parte es para el mantenedor donde se ven los productos activos e inactivos
+                    where = ` WHERE Familia_idFamilia = ${idFamilia}`;
+                }
+            }else{
+                if(paraVentas===true){
+                    where = ' WHERE Estado_idEstado = 1'; 
+                }
+            }
         }
         let resp = {
             datos : await this.consulta("SELECT * FROM producto "+where+" "+this.paginador(pagSiguiente, cantPorPag),parametrosBuscar),

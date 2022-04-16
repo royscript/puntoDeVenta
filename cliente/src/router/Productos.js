@@ -16,6 +16,7 @@ import formatoDinero from "../funciones/formatoDinero";
 const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
     const [titulo, setTitulo] = useState();
     const [familiaProducto, setFamiliaProducto] = useState([]);
+    const [familiaSeleccionada, setFamiliaSeleccionada] = useState();
     const [estado, setEstado] = useState([]);
     const [respuestaConsulta, setRespuestaConsulta] = useState();
     const [productos, setProductos] = useState([]);
@@ -33,7 +34,7 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
     }
     const listarProductos = async (search)=>{
         try {
-            const resultSet = await axios.post('/productos/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search});
+            const resultSet = await axios.post('/productos/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search, paraVentas : false, idFamilia : familiaSeleccionada});
             setProductos(resultSet.data);
         } catch (error) {
             setRespuestaConsulta(
@@ -47,6 +48,10 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
     const listarFamiliaProducto = async ()=>{
         const resultSet = await axios.get('/familia-producto/listar');
         setFamiliaProducto(resultSet.data);
+    }
+    const buscarFamilia =(idFamilia) =>{
+        if(familiaProducto.length==0) return idFamilia;
+        return familiaProducto.find((e)=>e.idFamilia==idFamilia).nombreFamilia;
     }
     const listarEstado = async ()=>{
         const resultSet = await axios.get('/estado/listar');
@@ -271,6 +276,7 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                         <th>Valor</th>
                                         <th>Cantidad</th>
                                         <th>Precio Venta</th>
+                                        <th>Familia</th>
                                         <th>Estado</th>
                                         <th>Accion</th>
                                     </tr>
@@ -283,6 +289,7 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                         <td>$ {formatoDinero(value.valorProducto)}</td>
                                         <td>{formatoDinero(value.cantidadProducto)}</td>
                                         <td>$ {formatoDinero(value.precioVentaProducto)}</td>
+                                        <td>{buscarFamilia(value.Familia_idFamilia)}</td>
                                         <td>
                                             <span className={value.Estado_idEstado==1?"badge bg-success":"badge bg-danger"}>
                                                 {buscarEstado(value.Estado_idEstado)}
@@ -318,6 +325,12 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
                                 setPagSiguiente={setPagSiguiente}
                                 funcionDeDatos={listarProductos}
                                 placeHolderSearch="Buscar por Codigo de Barra y nombres de productos"
+                                busquedaExtra={
+                                    <select style={{'width':'150px'}} onChange={(e)=>setFamiliaSeleccionada(e.target.value)}>
+                                        <option value="">Seleccione</option>
+                                        {familiaProducto.map((value,key)=><option key={key+'-familiaProducto'} value={value.idFamilia}>{value.nombreFamilia}</option>)}
+                                    </select>
+                                }
                             />
                             </Form>
                         </Formik>

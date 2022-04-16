@@ -6,17 +6,30 @@ import axios from "../../../api/axios";
 const BuscarProducto = ({cerrar,funcionAdicionalSet})=>{
     const [buscar, setBuscar] = useState();
     const [productos, setProductos] = useState([]);
+    const [familiaProducto, setFamiliaProducto] = useState([]);
+    const [familiaSeleccionada, setFamiliaSeleccionada] = useState();
     const [pagSiguiente, setPagSiguiente] = useState(1);
     const [cantPorPag, setCantPorPag] = useState(5);
     const listarProductos = async (search)=>{
         try {
-            const resultSet = await axios.post('/productos/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search, paraVentas : true});
+            const resultSet = await axios.post('/productos/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search, paraVentas : true, idFamilia : familiaSeleccionada});
             setProductos(resultSet.data);
         } catch (error) {
             
         }
         
     }
+    const listarFamiliaProducto = async ()=>{
+        const resultSet = await axios.get('/familia-producto/listar');
+        setFamiliaProducto(resultSet.data);
+    }
+    const buscarFamilia =(idFamilia) =>{
+        if(familiaProducto.length==0) return idFamilia;
+        return familiaProducto.find((e)=>e.idFamilia==idFamilia).nombreFamilia;
+    }
+    useEffect(()=>{
+        listarFamiliaProducto();
+    },[])
     useEffect(()=>{
         listarProductos();
     },[pagSiguiente,cantPorPag])
@@ -33,6 +46,7 @@ const BuscarProducto = ({cerrar,funcionAdicionalSet})=>{
                                         <th>Producto</th>
                                         <th>Cantidad</th>
                                         <th>Precio Venta</th>
+                                        <th>Familia</th>
                                         <th>Accion</th>
                                     </tr>
                                 }
@@ -43,6 +57,7 @@ const BuscarProducto = ({cerrar,funcionAdicionalSet})=>{
                                         <td>{value.nombreProducto}</td>
                                         <td>{formatoDinero(value.cantidadProducto)}</td>
                                         <td>$ {formatoDinero(value.precioVentaProducto)}</td>
+                                        <td>{buscarFamilia(value.Familia_idFamilia)}</td>
                                         <td>
                                             <div className="btn-group" role="group">
                                                 <button type="button" className="btn btn-warning" onClick={
@@ -64,6 +79,12 @@ const BuscarProducto = ({cerrar,funcionAdicionalSet})=>{
                                 setPagSiguiente={setPagSiguiente}
                                 funcionDeDatos={listarProductos}
                                 placeHolderSearch="Buscar por Codigo de Barra y nombres de productos"
+                                busquedaExtra={
+                                    <select style={{'width':'150px'}} onChange={(e)=>setFamiliaSeleccionada(e.target.value)}>
+                                        <option value="">Seleccione</option>
+                                        {familiaProducto.map((value,key)=><option key={key+'-familiaProducto'} value={value.idFamilia}>{value.nombreFamilia}</option>)}
+                                    </select>
+                                }
                             />
                         </div>
                                 

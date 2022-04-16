@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import NumeroPaginas from "./NumeroPaginas";
 
-const TablePagination = ({head,mostrarDatos,data,setCantPorPag,setPagSiguiente,funcionDeDatos,placeHolderSearch}) => {
+const TablePagination = ({head,mostrarDatos,data,setCantPorPag,setPagSiguiente,funcionDeDatos,placeHolderSearch, busquedaExtra}) => {
     const [registros, setRegistros] = useState([]);
     const [paginaActual, setPaginaActual] = useState(1);
     const [paginaClick, setPaginaClick] = useState(1);
@@ -43,7 +43,8 @@ const TablePagination = ({head,mostrarDatos,data,setCantPorPag,setPagSiguiente,f
                     </select>
                     &nbsp;
                     Buscar : &nbsp;
-                    <input type="search" name="search" style={{'width':'60%'}} onChange={(e)=>setSearch(e.target.value)} placeholder={placeHolderSearch}/>
+                    <input type="search" name="search" style={{'width':'40%'}} onChange={(e)=>setSearch(e.target.value)} placeholder={placeHolderSearch}/>
+                    {busquedaExtra}
                     &nbsp;
                     <button onClick={async ()=>{
                         await funcionDeDatos(search)

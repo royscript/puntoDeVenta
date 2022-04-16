@@ -12,9 +12,9 @@ router.get("/listar",(req, res)=>{
 });
 router.post("/listar",(req, res)=>{
     const { body } = req;
-    const { pagSiguiente, cantPorPag, search, paraVentas }= body;
+    const { pagSiguiente, cantPorPag, search, paraVentas, idFamilia }= body;
     RouterRespuestas(
-                    async ()=> await producto.listar(pagSiguiente, cantPorPag, search, paraVentas),
+                    async ()=> await producto.listar(pagSiguiente, cantPorPag, search, paraVentas, idFamilia),
                     res
                     );
 });
