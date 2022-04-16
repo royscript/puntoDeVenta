@@ -19,6 +19,14 @@ const Usuarios = ({children, logOut, conseguirPermisos, usuario})=>{
     const [pagSiguiente, setPagSiguiente] = useState(1);
     const [cantPorPag, setCantPorPag] = useState(5);
     const [permisos, setPermisos] = useState([]);
+    const buscarUsuario = async (rutUsuario)=>{
+        try {
+            return await axios.post('/usuario/buscar-usuario', {rutUsuario});
+        } catch (error) {
+            return null;
+        }
+        
+    }
     const listarUsuarios = async (search)=>{
         try {
             const resultSet = await axios.post('/usuario/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search});
@@ -62,6 +70,7 @@ const Usuarios = ({children, logOut, conseguirPermisos, usuario})=>{
         listarUsuarios();
     },[pagSiguiente,cantPorPag])
     useEffect(()=>{
+        setBotonPresionado("Guardar");
         setTitulo("Usuarios");
         listarPermiso();
         listarUsuarios();
@@ -80,7 +89,7 @@ const Usuarios = ({children, logOut, conseguirPermisos, usuario})=>{
                             initialValues={valoresFormulario || {idUsuario : '', nombreUsuario: '' , apellidoUsuario: '' , emailUsuario: '' , rutUsuario: '' , contrasenaUsuario: '' , direccionUsuario: '' , telefonoUsuario: '' , Permiso_idPermiso: ''}}
                             enableReinitialize
                             validate={
-                                (values) => {
+                                async (values) => {
                                     const errors = {}
                                     if(!values.nombreUsuario) {
                                         errors.nombreUsuario = 'Requerido'
@@ -101,6 +110,23 @@ const Usuarios = ({children, logOut, conseguirPermisos, usuario})=>{
                                         errors.rutUsuario = 'Requerido'
                                     } else if (values.rutUsuario.length < 5) {
                                         errors.rutUsuario = 'Ingresa el rut del usuario'
+                                    } else {
+                                        const resp = await buscarUsuario(values.rutUsuario);
+                                        //La unica forma de saber si estamos en modificar es mediante el idUsuario
+                                        //Si existe el idUsuario es porque es modificar, en caso contrario es agregar
+                                        if(values.idUsuario===null || values.idUsuario===''){
+                                            if(resp.data.length>0){
+                                                errors.rutUsuario = 'El rut ingresado corresponde a otro usuario';
+                                            }
+                                        }else{
+                                            const usuarioEncontrado = resp.data[0];
+                                            if(resp.data.length>0){
+                                                //Si el rut lo esta usando otra persona con un id diferente al del que estamos modificando
+                                                if(usuarioEncontrado.rutUsuario===values.rutUsuario && values.idUsuario!=usuarioEncontrado.idUsuario){
+                                                    errors.rutUsuario = 'El rut ingresado corresponde a otro usuario';
+                                                }
+                                            }
+                                        }
                                     }
                                     if(!values.contrasenaUsuario) {
                                         errors.contrasenaUsuario = 'Requerido'
@@ -120,7 +146,6 @@ const Usuarios = ({children, logOut, conseguirPermisos, usuario})=>{
                                     if(!values.Permiso_idPermiso) {
                                         errors.Permiso_idPermiso = 'Requerido'
                                     }
-
                                     return errors
                                 }
                             }
@@ -128,7 +153,7 @@ const Usuarios = ({children, logOut, conseguirPermisos, usuario})=>{
                                 props.handleFormChange(name, value); // call some method from parent 
                             }}
                             onSubmit={async (values,{resetForm,submitForm})=>{
-                                if(botonPresionado=="Guardar"){
+                                if(botonPresionado==="Guardar"){
                                     axios.put('/usuario/insertar', { nombreUsuario: values.nombreUsuario , apellidoUsuario: values.apellidoUsuario , emailUsuario: values.emailUsuario , rutUsuario: values.rutUsuario , contrasenaUsuario: values.contrasenaUsuario , direccionUsuario: values.direccionUsuario , telefonoUsuario: values.telefonoUsuario , Permiso_idPermiso: values.Permiso_idPermiso })
                                         .then(res => {
                                             if(res.status===200){

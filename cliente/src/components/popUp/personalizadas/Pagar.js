@@ -6,6 +6,7 @@ import Select from "../../formulario/Select";
 import Boton from "../../formulario/Boton";
 import { Formik, Form } from "formik";
 import ticketVenta from "../../impresiones/ticketVenta";
+import formatoDinero from "../../../funciones/formatoDinero";
 
 const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
     const [estadoBoton, setEstadoBoton] = useState();
@@ -151,11 +152,13 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                     <div className="accordion-body">
                                         <div className="card" style={{"width": "100%"}}>
                                             <div className="card-body">
-                                                <InputReadOnly name="idVenta" label="Id Venta"/>
-                                                
-                                                <InputReadOnly name="totalVenta" label="Total Venta"/>
-                                                <InputReadOnly name="Cliente_idUsuario" label="Id Cliente"/>
-                                                <InputReadOnly name="Cajero_idUsuario1" label="Id Cajero"/>
+                                                <InputReadOnly name="idVenta" label="Id Venta" type="hidden"/>
+                                                <div className="mb-3">
+                                                    <label className="form-label" >{`Total : $${formatoDinero(total)}`}</label>
+                                                </div>
+                                                <InputReadOnly name="totalVenta" label="Total Venta" type="hidden"/>
+                                                <InputReadOnly name="Cliente_idUsuario" label="Id Cliente" type="hidden"/>
+                                                <InputReadOnly name="Cajero_idUsuario1" label="Id Cajero" type="hidden"/>
                                                 <Select name="TipoVenta_idTipoVenta" label="Tipo de Venta">
                                                     <option>Seleccione</option>
                                                     {tipoVenta.map((value,key)=><option key={key+'-estado'} value={value.idTipoVenta}>{value.nombreTipoVenta}</option>)}
