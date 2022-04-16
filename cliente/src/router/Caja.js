@@ -43,8 +43,6 @@ const Caja = ({ logOut, usuario})=>{
         setProductoSeleccionado([]);
     },[])
     useEffect(()=>{
-        //console.log("Producto alterado");
-        //console.log(productoSeleccionado);
     },[productoSeleccionado]);
     useEffect(()=>{
         

@@ -14,7 +14,6 @@ const TablePagination = ({head,mostrarDatos,data,setCantPorPag,setPagSiguiente,f
         setCantPPag(event.target.value);
     }
     useEffect(()=>{
-        //console.log(data);
         if(data.cantidad){
             setTotalRegistros(data.cantidad[0].cantidad);
             setRegistros(data.datos);

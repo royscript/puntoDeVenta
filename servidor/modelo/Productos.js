@@ -84,7 +84,6 @@ class Productos extends mysql{
     }
     async eliminar(idProducto){
         const sql = "DELETE FROM `producto` WHERE `producto`.`idProducto` = ? ";
-        //console.log(sql, idProducto);
         var resp = await this.consulta(sql,[idProducto]);
         return resp;
     }

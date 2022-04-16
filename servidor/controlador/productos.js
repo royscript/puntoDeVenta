@@ -21,7 +21,6 @@ router.post("/listar",(req, res)=>{
 router.post("/buscar",(req, res)=>{
     const { body } = req;
     const { codigo }= body;
-    //console.log(codigo);
     RouterRespuestas(
                     async ()=> await producto.buscar(codigo),
                     res

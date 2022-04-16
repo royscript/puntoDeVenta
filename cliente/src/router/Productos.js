@@ -84,8 +84,6 @@ const Productos = ({children, logOut, conseguirPermisos, usuario})=>{
     },[pagSiguiente,cantPorPag])
     useEffect(()=>{
         setTitulo("Productos");
-        //conseguirPermisos();
-        //console.log(usuario);
         listarProductos();
         listarEstado();
         listarFamiliaProducto();
