@@ -27,9 +27,9 @@ router.post("/buscar-venta",(req, res)=>{
 });
 router.put("/insertar",(req, res)=>{
     const { body } = req;
-    const { fechaVenta, totalVenta, Cliente_idUsuario, Cajero_idUsuario1, TipoVenta_idTipoVenta, documentodeventa_idDocumentoDeVenta, mediopago_idMedioPago, detalleVenta }= body;
+    const { fechaVenta, totalVenta, Cliente_idUsuario, Cajero_idUsuario1, TipoVenta_idTipoVenta, documentodeventa_idDocumentoDeVenta, detalleVenta, capturaFormularioMediosDePago }= body;
     RouterRespuestas(
-                    async ()=> await venta.insertar(fechaVenta, totalVenta, Cliente_idUsuario, Cajero_idUsuario1, TipoVenta_idTipoVenta, documentodeventa_idDocumentoDeVenta, mediopago_idMedioPago, detalleVenta),
+                    async ()=> await venta.insertar(fechaVenta, totalVenta, Cliente_idUsuario, Cajero_idUsuario1, TipoVenta_idTipoVenta, documentodeventa_idDocumentoDeVenta, detalleVenta, capturaFormularioMediosDePago),
                     res
                     );
 });

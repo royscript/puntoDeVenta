@@ -83,7 +83,7 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                     <div className="row">
                         <div className="btn-group" role="group" style={{"display":"block"}}>
                         <Formik
-                            initialValues={valoresFormulario || {idVenta : '', fechaVenta: '' , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: '' , documentodeventa_idDocumentoDeVenta: '', mediopago_idMedioPago : ''}}
+                            initialValues={valoresFormulario || {idVenta : '', fechaVenta: '' , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: '' , documentodeventa_idDocumentoDeVenta: ''}}
                             enableReinitialize
                             validate={
                                 async (values) => {
@@ -100,12 +100,8 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                     if(!values.documentodeventa_idDocumentoDeVenta) {
                                         errors.documentodeventa_idDocumentoDeVenta = 'Requerido'
                                     }
-                                    if(!values.mediopago_idMedioPago){
-                                        errors.mediopago_idMedioPago = 'requerido';
-                                    }
-                                    if(!values.dineroEfectivoPagadoventa){
-                                        errors.dineroEfectivoPagadoventa = 'requerido';
-                                    }
+                                    
+                                    
                                     var seleccionado = false;
                                     var vectorRespaldo = mediosDePago;
                                     var medioEncontrado = null;
@@ -165,16 +161,18 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                         if(medioEncontrado.registrarId==='SI'){
                                            numeroDocumento = values[`registro-id-${medio.idMedioPago}`];
                                         }
+                                        capturaFormularioMediosDePago.push({
+                                            valorDinero,
+                                            numeroDocumento,
+                                            idMedioPago : medio.idMedioPago
+                                        });
                                     }
-                                    capturaFormularioMediosDePago.push({
-                                        valorDinero,
-                                        numeroDocumento
-                                    });
+                                    
                                 })
                                 //-------------------------
                                 if(estadoBoton=="Agregar"){
                                     
-                                    axios.put('/venta/insertar', { fechaVenta: values.fechaVenta , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: values.TipoVenta_idTipoVenta , documentodeventa_idDocumentoDeVenta: values.documentodeventa_idDocumentoDeVenta, mediopago_idMedioPago : values.mediopago_idMedioPago, detalleVenta, capturaFormularioMediosDePago })
+                                    axios.put('/venta/insertar', { fechaVenta: values.fechaVenta , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: values.TipoVenta_idTipoVenta , documentodeventa_idDocumentoDeVenta: values.documentodeventa_idDocumentoDeVenta, detalleVenta, capturaFormularioMediosDePago })
                                         .then(res => {
                                             if(res.status===200){
                                                 mostrarBoleta(res.data.idVenta, res.data.fechaVenta);
@@ -195,7 +193,7 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                         }
                                     }) 
                                 }else if(estadoBoton=="Modificar"){
-                                    axios.put('/venta/editar', { idVenta : values.idVenta, fechaVenta: values.fechaVenta , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: values.TipoVenta_idTipoVenta , documentodeventa_idDocumentoDeVenta: values.documentodeventa_idDocumentoDeVenta, mediopago_idMedioPago : values.mediopago_idMedioPago, detalleVenta, capturaFormularioMediosDePago })
+                                    axios.put('/venta/editar', { idVenta : values.idVenta, fechaVenta: values.fechaVenta , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: values.TipoVenta_idTipoVenta , documentodeventa_idDocumentoDeVenta: values.documentodeventa_idDocumentoDeVenta, detalleVenta, capturaFormularioMediosDePago })
                                     .then(res => {
                                         if(res.status===200){
                                             resetForm({values: ''});
@@ -244,10 +242,7 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                                     <option>Seleccione</option>
                                                     {documentoDeVenta.map((value,key)=><option key={key+'-documento-de-venta'} value={value.idDocumentoDeVenta}>{value.nombreDocumentoDeVenta}</option>)}
                                                 </Select>
-                                                <Select name="mediopago_idMedioPago" label="Medio de Pago">
-                                                    <option>Seleccione</option> 
-                                                    {medioDePago.map((value,key)=><option  value={value.idMedioPago}>{value.nombreMedioPago}</option>)}
-                                                </Select>
+                                                <Input type={"hidden"} name="mediopago_idMedioPago" Label="Seleccione los medios de Pago"/>
                                                 {
                                                     medioDePago.map((value,key)=>{
                                                         //console.log(value);

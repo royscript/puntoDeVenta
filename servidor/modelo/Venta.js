@@ -29,17 +29,16 @@ class Venta extends mysql{
     async buscarUnaVenta(idVenta){
         return await this.consulta("SELECT * FROM venta WHERE idVenta LIKE ? ",[idVenta]);
     }
-    async insertar(fechaVenta, totalVenta, Cliente_idUsuario, Cajero_idUsuario1, TipoVenta_idTipoVenta, documentodeventa_idDocumentoDeVenta, mediopago_idMedioPago,productos){
+    async insertar(fechaVenta, totalVenta, Cliente_idUsuario, Cajero_idUsuario1, TipoVenta_idTipoVenta, documentodeventa_idDocumentoDeVenta,productos,capturaFormularioMediosDePago){
         const sql = `INSERT INTO venta (fechaVenta,
                                         totalVenta,
                                         Cliente_idUsuario,
                                         Cajero_idUsuario1,
                                         TipoVenta_idTipoVenta,
-                                        documentodeventa_idDocumentoDeVenta,
-                                        mediopago_idMedioPago)
+                                        documentodeventa_idDocumentoDeVenta)
                                         VALUES
-                                        (NOW(),?,?,?,?,?,?)`;
-        let resp = await this.consulta(sql,[ totalVenta, Cliente_idUsuario, Cajero_idUsuario1, TipoVenta_idTipoVenta, documentodeventa_idDocumentoDeVenta, mediopago_idMedioPago]);
+                                        (NOW(),?,?,?,?,?)`;
+        let resp = await this.consulta(sql,[ totalVenta, Cliente_idUsuario, Cajero_idUsuario1, TipoVenta_idTipoVenta, documentodeventa_idDocumentoDeVenta]);
         resp = JSON.parse(JSON.stringify(resp));
         const idVenta = resp.insertId;
         productos.forEach(async producto => {
@@ -48,6 +47,24 @@ class Venta extends mysql{
         });
         let venta = await this.buscarUnaVenta(idVenta);
         venta = JSON.parse(JSON.stringify(venta));
+        //capturaFormularioMediosDePago
+        capturaFormularioMediosDePago.forEach(async (medio)=>{
+            const sqlMedioPago = `INSERT INTO venta_mediopago(venta_idVenta, venta_Cliente_idUsuario, 
+                                                                    venta_Cajero_idUsuario1, venta_TipoVenta_idTipoVenta, 
+                                                                    venta_documentodeventa_idDocumentoDeVenta, 
+                                                                    mediopago_idMedioPago, dinero_venta_mediopago, 
+                                                                    idDocumento_venta_mediopago) 
+                                                            VALUES (?,?,
+                                                                    ?,?,
+                                                                    ?,?,
+                                                                    ?,?)`;
+            await this.consulta(sqlMedioPago,[idVenta,Cliente_idUsuario,
+                                    Cajero_idUsuario1,TipoVenta_idTipoVenta,
+                                    documentodeventa_idDocumentoDeVenta,
+                                    medio.idMedioPago,medio.valorDinero,
+                                    medio.numeroDocumento]);
+        })
+        
         return{
             idVenta,
             fechaVenta : venta[0].fechaVenta
