@@ -83,7 +83,7 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                     <div className="row">
                         <div className="btn-group" role="group" style={{"display":"block"}}>
                         <Formik
-                            initialValues={valoresFormulario || {idVenta : '', fechaVenta: '' , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: '' , documentodeventa_idDocumentoDeVenta: '', mediopago_idMedioPago : '', dineroEfectivoPagadoventa : 0,dineroTarjetaPagadoventa : 0}}
+                            initialValues={valoresFormulario || {idVenta : '', fechaVenta: '' , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: '' , documentodeventa_idDocumentoDeVenta: '', mediopago_idMedioPago : ''}}
                             enableReinitialize
                             validate={
                                 async (values) => {
@@ -287,11 +287,6 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                                 <div className="mb-3">
                                                     <label className="form-label" ><h4>{`Total a Pagar: $${formatoDinero(total)}`}</h4></label>
                                                 </div>
-                                                <Input name="dineroEfectivoPagadoventa" label={"Dinero en Efectivo"} type="number"/>
-                                                <div className="mb-3">
-                                                    <label className="form-label" ><h5>{`Vuelto ${parseInt(vueltoEfectivo)<0?"(aun falta pagar)":""}: $${formatoDinero(vueltoEfectivo)}`}</h5></label>
-                                                </div>
-                                                <Input name="dineroTarjetaPagadoventa" label={"Pago Dinero tarjeta"} type="number"/>
                                             </div>
                                             <div className="card-footer">
                                                 <div className="row">
