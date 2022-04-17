@@ -21,4 +21,5 @@ ver los jwt
 informes:
 informe diario
 hacer que en el menu solo aparezca los mantenedores que utilizara el usuario
+Hacer mascara para rut
 ```
