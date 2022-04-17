@@ -119,7 +119,7 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                         }
                                         if(values[medio.idMedioPago]===true){
                                             seleccionado = true;
-                                            //HAsta aca estamos solicitando el dinero
+                                            //Hasta aca estamos solicitando el dinero
                                             if(!values[`dinero-${medio.idMedioPago}`]){
                                                 errors[`dinero-${medio.idMedioPago}`] = 'Ingrese el dinero';
                                             }
@@ -144,9 +144,37 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                 console.log("cambio");
                             }}
                             onSubmit={async (values,{resetForm,submitForm})=>{
+                                //Captura de medios de pago
+                                var capturaFormularioMediosDePago = [];//Acá se almacenará todo
+                                var vectorRespaldo = mediosDePago;
+                                var medioEncontrado = null;
+                                medioDePago.forEach((medio,key)=>{
+                                    if(mediosDePago.length>0){
+                                        //console.log(medio);
+                                        //console.log(mediosDePago);
+                                        var idEncontrado = mediosDePago.findIndex((e)=>e.id===medio.idMedioPago);
+                                        vectorRespaldo[idEncontrado].valor = values[medio.idMedioPago];
+                                        medioEncontrado = vectorRespaldo[idEncontrado];
+                                    }
+                                    var valorDinero = null;
+                                    var numeroDocumento = null;
+                                    if(values[medio.idMedioPago]===true){
+                                        //Hasta aca estamos solicitando el dinero
+                                        valorDinero = values[`dinero-${medio.idMedioPago}`]
+                                        //Acá solicitaremos el numero de documento para el que lo pida
+                                        if(medioEncontrado.registrarId==='SI'){
+                                           numeroDocumento = values[`registro-id-${medio.idMedioPago}`];
+                                        }
+                                    }
+                                    capturaFormularioMediosDePago.push({
+                                        valorDinero,
+                                        numeroDocumento
+                                    });
+                                })
+                                //-------------------------
                                 if(estadoBoton=="Agregar"){
                                     
-                                    axios.put('/venta/insertar', { fechaVenta: values.fechaVenta , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: values.TipoVenta_idTipoVenta , documentodeventa_idDocumentoDeVenta: values.documentodeventa_idDocumentoDeVenta, mediopago_idMedioPago : values.mediopago_idMedioPago, detalleVenta, dineroEfectivoPagadoventa : values.dineroEfectivoPagadoventa, dineroTarjetaPagadoventa : values.dineroTarjetaPagadoventa })
+                                    axios.put('/venta/insertar', { fechaVenta: values.fechaVenta , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: values.TipoVenta_idTipoVenta , documentodeventa_idDocumentoDeVenta: values.documentodeventa_idDocumentoDeVenta, mediopago_idMedioPago : values.mediopago_idMedioPago, detalleVenta, capturaFormularioMediosDePago })
                                         .then(res => {
                                             if(res.status===200){
                                                 mostrarBoleta(res.data.idVenta, res.data.fechaVenta);
@@ -167,7 +195,7 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                         }
                                     }) 
                                 }else if(estadoBoton=="Modificar"){
-                                    axios.put('/venta/editar', { idVenta : values.idVenta, fechaVenta: values.fechaVenta , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: values.TipoVenta_idTipoVenta , documentodeventa_idDocumentoDeVenta: values.documentodeventa_idDocumentoDeVenta, mediopago_idMedioPago : values.mediopago_idMedioPago, detalleVenta, dineroEfectivoPagadoventa : values.dineroEfectivoPagadoventa, dineroTarjetaPagadoventa : values.dineroTarjetaPagadoventa })
+                                    axios.put('/venta/editar', { idVenta : values.idVenta, fechaVenta: values.fechaVenta , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: values.TipoVenta_idTipoVenta , documentodeventa_idDocumentoDeVenta: values.documentodeventa_idDocumentoDeVenta, mediopago_idMedioPago : values.mediopago_idMedioPago, detalleVenta, capturaFormularioMediosDePago })
                                     .then(res => {
                                         if(res.status===200){
                                             resetForm({values: ''});
