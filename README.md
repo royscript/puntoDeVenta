@@ -15,7 +15,6 @@ Software de Punto de Venta Open Source desarrollado con NodeJs (express), React 
 ```
 Pendientes:
 Modulo de caja, permitir anular una boleta ()=> numero de boleta y boton anular
-Modulo de caja, permitir editar una boleta
 Ingresar apertura y cierre de caja
 validar que la caja no se abra hasta que este abierta la caja
 ver los jwt
