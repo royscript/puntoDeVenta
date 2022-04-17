@@ -116,9 +116,11 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                         if(values[medio.idMedioPago]===true){
                                             seleccionado = true;
                                             //Hasta aca estamos solicitando el dinero
-                                            if(!values[`dinero-${medio.idMedioPago}`]){
+                                            if(values[`dinero-${medio.idMedioPago}`]<0){
+                                                console.log(values[`dinero-${medio.idMedioPago}`]);
                                                 errors[`dinero-${medio.idMedioPago}`] = 'Ingrese el dinero';
                                             }
+                                            
                                             //Acá solicitaremos el numero de documento para el que lo pida
                                             if(medioEncontrado.registrarId==='SI'){
                                                 if(!values[`registro-id-${medio.idMedioPago}`]){
@@ -156,7 +158,7 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                     var numeroDocumento = null;
                                     if(values[medio.idMedioPago]===true){
                                         //Hasta aca estamos solicitando el dinero
-                                        valorDinero = values[`dinero-${medio.idMedioPago}`]
+                                        valorDinero = values[`dinero-${medio.idMedioPago}`].replaceAll(".","");
                                         //Acá solicitaremos el numero de documento para el que lo pida
                                         if(medioEncontrado.registrarId==='SI'){
                                            numeroDocumento = values[`registro-id-${medio.idMedioPago}`];
@@ -219,6 +221,7 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                                
                             }}
                         > 
+                        {({ setFieldValue }) => (
                             <Form>
                             <div className="accordion" id="accordionExample">
                                 <div className="accordion-item">
@@ -263,7 +266,14 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                                                         mediosDePago.length>0 ?
                                                                             estadoMedioPago.valor===true?
                                                                                 <>
-                                                                                <Input name={`dinero-${estadoMedioPago.id}`} label={`Ingrese el dinero de ${estadoMedioPago.nombre}`} type="number"/>
+                                                                                <Input name={`dinero-${estadoMedioPago.id}`} 
+                                                                                        label={`Ingrese el dinero de ${estadoMedioPago.nombre}`} 
+                                                                                        type="text"
+                                                                                        onChange={
+                                                                                            (e, value) => {
+                                                                                                setFieldValue(`dinero-${estadoMedioPago.id}`,formatoDinero(e.target.value));
+                                                                                            }
+                                                                                        }/>
                                                                                 {estadoMedioPago.registrarId==='SI'?
                                                                                     <Input name={`registro-id-${estadoMedioPago.id}`} label={`Ingrese el Número de ${estadoMedioPago.nombre}`} type="text"/>
                                                                                 :
@@ -301,6 +311,7 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                 </div>
                             </div>
                             </Form>
+                            )}
                         </Formik>
                         </div>
                     </div>
