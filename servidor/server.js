@@ -24,6 +24,7 @@ const TipoVenta = require('./controlador/tipoVenta');
 const DocumentoDeVenta = require('./controlador/documentoDeVenta');
 const MedioDePago = require('./controlador/medioDePago');
 const Venta = require('./controlador/venta');
+const EstadoDinero = require('./controlador/estadoDinero');
 //----------------------------
 
 //--------MIDDLEWARE-----------
@@ -51,9 +52,10 @@ app.use('/api/proveedor/', Proveedor);
 app.use('/api/documento-compra/', DocumentoCompra);
 app.use('/api/compra/', Compra);
 app.use('/api/detalle-compra/',DetalleCompra);
+app.use('/api/estado-dinero/',EstadoDinero);
 
 
 //------SUBIR APP--------------
 app.listen(process.env.PORT_NODE, ()=>{
-    console.log("nodejs server puerto "+process.env.PORT_NODE+" (corriendo)");
+    console.log("Servidor Node JS "+process.env.PORT_NODE);
 });

@@ -97,11 +97,11 @@ const Compra = ({children, logOut, conseguirPermisos, usuario})=>{
                             validate={
                                 (values) => {
                                     const errors = {}
-                                    if(!values.FechaCompra) {
+                                    /*if(!values.FechaCompra) {
                                         errors.FechaCompra = 'Requerido'
                                     } else if (values.FechaCompra.length < 4) {
                                         errors.FechaCompra = 'Ingresa la fecha de la compra'
-                                    }
+                                    }*/
                                     if(!values.FechaRegistroCompra) {
                                         errors.FechaRegistroCompra = 'Requerido'
                                     } else if (values.FechaRegistroCompra.length < 5) {

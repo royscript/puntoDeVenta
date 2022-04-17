@@ -22,16 +22,17 @@ class MedioDePago extends mysql{
         }
         return resp;
     }
-    insertar(nombreMedioPago){
-        const sql = "INSERT INTO mediopago (nombreMedioPago) VALUES (?)";
-        return this.consulta(sql,[nombreMedioPago]);
+    insertar(nombreMedioPago,seNecesitaIdDocumentoMedioPago){
+        const sql = "INSERT INTO mediopago (nombreMedioPago,seNecesitaIdDocumentoMedioPago) VALUES (?,?)";
+        return this.consulta(sql,[nombreMedioPago,seNecesitaIdDocumentoMedioPago]);
     }
-    editar(nombreMedioPago,idMedioPago){
+    editar(nombreMedioPago,seNecesitaIdDocumentoMedioPago,idMedioPago){
         const sql = "UPDATE mediopago "
                                 +"SET "
                                 +"nombreMedioPago= ? "
+                                +",seNecesitaIdDocumentoMedioPago= ?"
                     +" WHERE idMedioPago = ? ";
-        return this.consulta(sql,[nombreMedioPago,idMedioPago]);
+        return this.consulta(sql,[nombreMedioPago,seNecesitaIdDocumentoMedioPago,idMedioPago]);
     }
     async eliminar(idMedioPago){
         const sql = "DELETE FROM `mediopago` WHERE `idMedioPago` = ? ";

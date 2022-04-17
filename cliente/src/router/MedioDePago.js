@@ -8,6 +8,7 @@ import Input from "../components/formulario/Input";
 import Boton from "../components/formulario/Boton";
 import TablePagination from "../components/tablas/TablePagination";
 import InputReadOnly from "../components/formulario/InputReadOnly";
+import Select from "../components/formulario/Select";
 
 const MedioDePago = ({children, logOut, conseguirPermisos, usuario})=>{
     const [titulo, setTitulo] = useState();
@@ -35,7 +36,7 @@ const MedioDePago = ({children, logOut, conseguirPermisos, usuario})=>{
             const resultSet = await axios.post('/medio-de-pago/eliminar', {id});
             setRespuestaConsulta(
                 <div className="alert alert-danger" role="alert">
-                    Producto <b>Eliminado</b> Correscamente
+                    Producto <b>Eliminado</b> Correctamente
                     <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>);
             listarMedioDePago();
@@ -67,7 +68,7 @@ const MedioDePago = ({children, logOut, conseguirPermisos, usuario})=>{
                         <HeaderContainer titulo={titulo}/>
                         {children}
                         <Formik
-                            initialValues={valoresFormulario || {idMedioPago : '', nombreMedioPago : ''}}
+                            initialValues={valoresFormulario || {idMedioPago : '', nombreMedioPago : '', seNecesitaIdDocumentoMedioPago : ''}}
                             enableReinitialize
                             validate={
                                 (values) => {
@@ -77,6 +78,9 @@ const MedioDePago = ({children, logOut, conseguirPermisos, usuario})=>{
                                     } else if (values.nombreMedioPago.length < 5) {
                                         errors.nombreMedioPago = 'Ingresa el Nombre del Medio de Pago'
                                     }
+                                    if(!values.seNecesitaIdDocumentoMedioPago){
+                                        errors.seNecesitaIdDocumentoMedioPago = 'Requerido';
+                                    }
                                     return errors
                                 }
                             }
@@ -85,7 +89,7 @@ const MedioDePago = ({children, logOut, conseguirPermisos, usuario})=>{
                             }}
                             onSubmit={async (values,{resetForm,submitForm})=>{
                                 if(botonPresionado==="Guardar"){
-                                    axios.put('/medio-de-pago/insertar', { nombreMedioPago : values.nombreMedioPago })
+                                    axios.put('/medio-de-pago/insertar', { nombreMedioPago : values.nombreMedioPago, seNecesitaIdDocumentoMedioPago : values.seNecesitaIdDocumentoMedioPago })
                                         .then(res => {
                                             if(res.status===200){
                                                 resetForm({values: ''});
@@ -107,7 +111,7 @@ const MedioDePago = ({children, logOut, conseguirPermisos, usuario})=>{
                                         }
                                     }) 
                                 }else{
-                                    axios.put('/medio-de-pago/editar', { nombreMedioPago : values.nombreMedioPago,
+                                    axios.put('/medio-de-pago/editar', { nombreMedioPago : values.nombreMedioPago, seNecesitaIdDocumentoMedioPago : values.seNecesitaIdDocumentoMedioPago,
                                         idMedioPago : values.idMedioPago })
                                     .then(res => {
                                         if(res.status===200){
@@ -146,6 +150,11 @@ const MedioDePago = ({children, logOut, conseguirPermisos, usuario})=>{
                                             <div className="card-body">
                                                 <InputReadOnly name="idMedioPago" label="Id Medio de Pago"/>
                                                 <Input name="nombreMedioPago" label="Nombre Medio de Pago" type="text"/>
+                                                <Select name="seNecesitaIdDocumentoMedioPago" label="¿Necesita registrar el id del medio de pago?">
+                                                    <option>Seleccione</option>
+                                                    <option value="SI">SI</option>
+                                                    <option value="NO">NO</option>
+                                                </Select>
                                             </div>
                                             <div className="card-footer">
                                                 <div className="row">
@@ -170,6 +179,7 @@ const MedioDePago = ({children, logOut, conseguirPermisos, usuario})=>{
                                     <tr>
                                         <th>#</th>
                                         <th>Nombre Medio de Pago</th>
+                                        <th>¿Necesita registrar el Id del pago?</th>
                                         <th>Accion</th>
                                     </tr>
                                 }
@@ -178,6 +188,7 @@ const MedioDePago = ({children, logOut, conseguirPermisos, usuario})=>{
                                     <tr key={index+'fila'}>
                                         <td>{value.idMedioPago}</td>
                                         <td>{value.nombreMedioPago}</td>
+                                        <td>{value.seNecesitaIdDocumentoMedioPago}</td>
                                         <td>
                                             <div className="btn-group" role="group">
                                                 <button type="button" className="btn btn-warning" onClick={

@@ -19,17 +19,17 @@ router.post("/listar",(req, res)=>{
 });
 router.put("/insertar",(req, res)=>{
     const { body } = req;
-    const { nombreMedioPago }= body;
+    const { nombreMedioPago, seNecesitaIdDocumentoMedioPago }= body;
     RouterRespuestas(
-                    async ()=> await medioDePago.insertar(nombreMedioPago),
+                    async ()=> await medioDePago.insertar(nombreMedioPago,seNecesitaIdDocumentoMedioPago),
                     res
                     );
 });
 router.put("/editar",(req, res)=>{
     const { body } = req;
-    const { nombreMedioPago,idMedioPago }= body;
+    const { nombreMedioPago,idMedioPago,seNecesitaIdDocumentoMedioPago }= body;
     RouterRespuestas(
-                    async ()=> await medioDePago.editar(nombreMedioPago,idMedioPago),
+                    async ()=> await medioDePago.editar(nombreMedioPago,seNecesitaIdDocumentoMedioPago,idMedioPago),
                     res
                     );
 });

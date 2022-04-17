@@ -55,8 +55,9 @@ class DetalleCompra extends mysql{
         return this.consulta(sql,[cantidad, valorProducto, idProducto,Estado_idEstado, Compra_idCompra]);
     }
     async actualizarStocks (Compra_idCompra){
-        let consulta = await this.consulta("SELECT * FROM puntodeventa.detallecompra WHERE Compra_idCompra = ?",[Compra_idCompra]);
+        let consulta = await this.consulta("SELECT * FROM detallecompra WHERE Compra_idCompra = ?",[Compra_idCompra]);
         consulta = JSON.parse(JSON.stringify(consulta));
+        console.log(consulta);
         consulta.forEach(async producto => {
             await objetoProducto.agregarProducto(producto.Producto_idProducto,producto.cantidadDetalleCompra);
         });

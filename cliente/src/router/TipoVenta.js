@@ -8,6 +8,7 @@ import Input from "../components/formulario/Input";
 import Boton from "../components/formulario/Boton";
 import TablePagination from "../components/tablas/TablePagination";
 import InputReadOnly from "../components/formulario/InputReadOnly";
+import Select from "../components/formulario/Select";
 
 const TipoVenta = ({children, logOut, conseguirPermisos, usuario})=>{
     const [titulo, setTitulo] = useState();
@@ -17,6 +18,7 @@ const TipoVenta = ({children, logOut, conseguirPermisos, usuario})=>{
     const [botonPresionado,setBotonPresionado] = useState(null);
     const [pagSiguiente, setPagSiguiente] = useState(1);
     const [cantPorPag, setCantPorPag] = useState(5);
+    const [estadoDinero, setEstadoDinero] = useState([]);
     const listarTipoVenta = async (search)=>{
         try {
             const resultSet = await axios.post('/tipo-venta/listar', {pagSiguiente : pagSiguiente, cantPorPag : cantPorPag, search});
@@ -48,6 +50,14 @@ const TipoVenta = ({children, logOut, conseguirPermisos, usuario})=>{
         }
         
     }
+    const listarEstadoDinero = async ()=>{
+        const resultSet = await axios.get('/estado-dinero/listar');
+        setEstadoDinero(resultSet.data);
+    }
+    const buscarEstadoDinero =(idEstadoDinero) =>{
+        if(estadoDinero.length==0) return idEstadoDinero;
+        return estadoDinero.find((e)=>e.idEstadoDinero==idEstadoDinero).nombreEstadoDinero;
+    }
     useEffect(()=>{
         listarTipoVenta();
     },[pagSiguiente,cantPorPag])
@@ -56,6 +66,7 @@ const TipoVenta = ({children, logOut, conseguirPermisos, usuario})=>{
         //conseguirPermisos();
         //console.log(usuario);
         listarTipoVenta();
+        listarEstadoDinero();
     },[])
     return(
         <>
@@ -66,7 +77,7 @@ const TipoVenta = ({children, logOut, conseguirPermisos, usuario})=>{
                     <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                         <HeaderContainer titulo={titulo}/>
                         <Formik
-                            initialValues={valoresFormulario || {idTipoVenta : '', nombreTipoVenta : ''}}
+                            initialValues={valoresFormulario || {idTipoVenta : '', nombreTipoVenta : '', EstadoDinero_idEstadoDinero : ''}}
                             enableReinitialize
                             validate={
                                 (values) => {
@@ -76,6 +87,9 @@ const TipoVenta = ({children, logOut, conseguirPermisos, usuario})=>{
                                     } else if (values.nombreTipoVenta.length < 5) {
                                         errors.nombreTipoVenta = 'Ingresa el Nombre del Tipo de Venta'
                                     }
+                                    if(!values.EstadoDinero_idEstadoDinero){
+                                        errors.EstadoDinero_idEstadoDinero = 'requerido'
+                                    }
                                     return errors
                                 }
                             }
@@ -84,7 +98,7 @@ const TipoVenta = ({children, logOut, conseguirPermisos, usuario})=>{
                             }}
                             onSubmit={async (values,{resetForm,submitForm})=>{
                                 if(botonPresionado==="Guardar"){
-                                    axios.put('/tipo-venta/insertar', { nombreTipoVenta : values.nombreTipoVenta })
+                                    axios.put('/tipo-venta/insertar', { nombreTipoVenta : values.nombreTipoVenta, EstadoDinero_idEstadoDinero : values.EstadoDinero_idEstadoDinero })
                                         .then(res => {
                                             if(res.status===200){
                                                 resetForm({values: ''});
@@ -106,7 +120,7 @@ const TipoVenta = ({children, logOut, conseguirPermisos, usuario})=>{
                                         }
                                     }) 
                                 }else{
-                                    axios.put('/tipo-venta/editar', { nombreTipoVenta : values.nombreTipoVenta,
+                                    axios.put('/tipo-venta/editar', { nombreTipoVenta : values.nombreTipoVenta, EstadoDinero_idEstadoDinero : values.EstadoDinero_idEstadoDinero,
                                         idTipoVenta : values.idTipoVenta })
                                     .then(res => {
                                         if(res.status===200){
@@ -145,6 +159,10 @@ const TipoVenta = ({children, logOut, conseguirPermisos, usuario})=>{
                                             <div className="card-body">
                                                 <InputReadOnly name="idTipoVenta" label="Id Tipo de Venta"/>
                                                 <Input name="nombreTipoVenta" label="Nombre Tipo de Venta" type="text"/>
+                                                <Select name="EstadoDinero_idEstadoDinero" label="¿que sucedera con el flujo de dinero?">
+                                                    <option>Seleccione</option>
+                                                    {estadoDinero.map((value,key)=><option key={key+'-estadoDinero'} value={value.idEstadoDinero}>{value.nombreEstadoDinero}</option>)}
+                                                </Select>
                                             </div>
                                             <div className="card-footer">
                                                 <div className="row">
@@ -169,6 +187,7 @@ const TipoVenta = ({children, logOut, conseguirPermisos, usuario})=>{
                                     <tr>
                                         <th>#</th>
                                         <th>Nombre Tipo de Venta</th>
+                                        <th>Estado del Dinero</th>
                                         <th>Accion</th>
                                     </tr>
                                 }
@@ -177,6 +196,7 @@ const TipoVenta = ({children, logOut, conseguirPermisos, usuario})=>{
                                     <tr key={index+'fila'}>
                                         <td>{value.idTipoVenta}</td>
                                         <td>{value.nombreTipoVenta}</td>
+                                        <td>{buscarEstadoDinero(value.EstadoDinero_idEstadoDinero)}</td>
                                         <td>
                                             <div className="btn-group" role="group">
                                                 <button type="button" className="btn btn-warning" onClick={

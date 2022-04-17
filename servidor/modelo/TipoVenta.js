@@ -22,16 +22,17 @@ class TipoVenta extends mysql{
         }
         return resp;
     }
-    insertar(nombreTipoVenta){
-        const sql = "INSERT INTO tipoventa (nombreTipoVenta) VALUES (?)";
-        return this.consulta(sql,[nombreTipoVenta]);
+    insertar(nombreTipoVenta, EstadoDinero_idEstadoDinero){
+        const sql = "INSERT INTO tipoventa (nombreTipoVenta, EstadoDinero_idEstadoDinero) VALUES (?,?)";
+        return this.consulta(sql,[nombreTipoVenta, EstadoDinero_idEstadoDinero]);
     }
-    editar(nombreTipoVenta,idTipoVenta){
+    editar(nombreTipoVenta,EstadoDinero_idEstadoDinero,idTipoVenta){
         const sql = "UPDATE tipoventa "
                                 +"SET "
                                 +"nombreTipoVenta= ? "
+                                +", EstadoDinero_idEstadoDinero = ? "
                     +" WHERE idTipoVenta = ? ";
-        return this.consulta(sql,[nombreTipoVenta,idTipoVenta]);
+        return this.consulta(sql,[nombreTipoVenta,EstadoDinero_idEstadoDinero,idTipoVenta]);
     }
     async eliminar(idTipoVenta){
         const sql = "DELETE FROM `tipoventa` WHERE `idTipoVenta` = ? ";

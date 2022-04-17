@@ -7,6 +7,7 @@ import Boton from "../../formulario/Boton";
 import { Formik, Form } from "formik";
 import ticketVenta from "../../impresiones/ticketVenta";
 import formatoDinero from "../../../funciones/formatoDinero";
+import Checkbox from "../../formulario/Checkbox";
 
 const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
     const [estadoBoton, setEstadoBoton] = useState();
@@ -16,6 +17,8 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
     const [documentoDeVenta, setDocumentoDeVenta] = useState([]);
     const [medioDePago, setMedioDePago] = useState([]);
     const [total, setTotal] = useState(0);
+    const [vueltoEfectivo , setVueltoEfectivo ] = useState(0);
+    const [mediosDePago, setMediosDePago] = useState([]);
     useEffect(()=>{
         var acumulador = 0;
         detalleVenta.forEach((producto)=>{
@@ -56,6 +59,23 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
         listarDocumentoDeVenta();
         listarMedioDePago();
     },[])
+    useEffect(()=>{
+        if(medioDePago.length>0){
+            var vector = [];
+            medioDePago.forEach((value,key)=>{
+                vector.push({
+                        id : value.idMedioPago,
+                        nombre : value.nombreMedioPago,
+                        registrarId : value.seNecesitaIdDocumentoMedioPago,
+                        valor : false
+                    });
+            })
+            setMediosDePago(vector);
+        }
+    },[medioDePago])
+    useEffect(()=>{
+        //console.log(mediosDePago);
+    },[mediosDePago])
     return(
         <>
             <div className="card" style={{"width": "700px","height": "460px"}}>
@@ -63,13 +83,12 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                     <div className="row">
                         <div className="btn-group" role="group" style={{"display":"block"}}>
                         <Formik
-                            initialValues={valoresFormulario || {idVenta : '', fechaVenta: '' , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: '' , documentodeventa_idDocumentoDeVenta: '', mediopago_idMedioPago : ''}}
+                            initialValues={valoresFormulario || {idVenta : '', fechaVenta: '' , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: '' , documentodeventa_idDocumentoDeVenta: '', mediopago_idMedioPago : '', dineroEfectivoPagadoventa : 0,dineroTarjetaPagadoventa : 0}}
                             enableReinitialize
                             validate={
                                 async (values) => {
                                     const errors = {}
-                                    
-                                    
+                                    setVueltoEfectivo(parseInt(values.dineroEfectivoPagadoventa)-parseInt(total));
                                     if(!values.Cajero_idUsuario1) {
                                         errors.Cajero_idUsuario1 = 'Requerido'
                                     } else if (values.Cajero_idUsuario1.length < 5) {
@@ -84,16 +103,50 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                     if(!values.mediopago_idMedioPago){
                                         errors.mediopago_idMedioPago = 'requerido';
                                     }
+                                    if(!values.dineroEfectivoPagadoventa){
+                                        errors.dineroEfectivoPagadoventa = 'requerido';
+                                    }
+                                    var seleccionado = false;
+                                    var vectorRespaldo = mediosDePago;
+                                    var medioEncontrado = null;
+                                    medioDePago.forEach((medio,key)=>{
+                                        if(mediosDePago.length>0){
+                                            //console.log(medio);
+                                            //console.log(mediosDePago);
+                                            var idEncontrado = mediosDePago.findIndex((e)=>e.id===medio.idMedioPago);
+                                            vectorRespaldo[idEncontrado].valor = values[medio.idMedioPago];
+                                            medioEncontrado = vectorRespaldo[idEncontrado];
+                                        }
+                                        if(values[medio.idMedioPago]===true){
+                                            seleccionado = true;
+                                            //HAsta aca estamos solicitando el dinero
+                                            if(!values[`dinero-${medio.idMedioPago}`]){
+                                                errors[`dinero-${medio.idMedioPago}`] = 'Ingrese el dinero';
+                                            }
+                                            //Acá solicitaremos el numero de documento para el que lo pida
+                                            if(medioEncontrado.registrarId==='SI'){
+                                                if(!values[`registro-id-${medio.idMedioPago}`]){
+                                                    errors[`registro-id-${medio.idMedioPago}`] = 'Ingrese el número de documento';
+                                                }
+                                            }
+                                        }
+                                    })
+                                    setMediosDePago(vectorRespaldo);
+                                    if(seleccionado===false){
+                                        errors.mediopago_idMedioPago = 'Debe escoger al menos un medio de pago';
+                                    }
+                                    //console.log(mediosDePago);
                                     return errors
                                 }
                             }
                             onChange = {(name, value, { props }) => {
                                 props.handleFormChange(name, value); // call some method from parent 
+                                console.log("cambio");
                             }}
                             onSubmit={async (values,{resetForm,submitForm})=>{
                                 if(estadoBoton=="Agregar"){
                                     
-                                    axios.put('/venta/insertar', { fechaVenta: values.fechaVenta , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: values.TipoVenta_idTipoVenta , documentodeventa_idDocumentoDeVenta: values.documentodeventa_idDocumentoDeVenta, mediopago_idMedioPago : values.mediopago_idMedioPago, detalleVenta })
+                                    axios.put('/venta/insertar', { fechaVenta: values.fechaVenta , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: values.TipoVenta_idTipoVenta , documentodeventa_idDocumentoDeVenta: values.documentodeventa_idDocumentoDeVenta, mediopago_idMedioPago : values.mediopago_idMedioPago, detalleVenta, dineroEfectivoPagadoventa : values.dineroEfectivoPagadoventa, dineroTarjetaPagadoventa : values.dineroTarjetaPagadoventa })
                                         .then(res => {
                                             if(res.status===200){
                                                 mostrarBoleta(res.data.idVenta, res.data.fechaVenta);
@@ -114,7 +167,7 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                         }
                                     }) 
                                 }else if(estadoBoton=="Modificar"){
-                                    axios.put('/venta/editar', { idVenta : values.idVenta, fechaVenta: values.fechaVenta , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: values.TipoVenta_idTipoVenta , documentodeventa_idDocumentoDeVenta: values.documentodeventa_idDocumentoDeVenta, mediopago_idMedioPago : values.mediopago_idMedioPago, detalleVenta })
+                                    axios.put('/venta/editar', { idVenta : values.idVenta, fechaVenta: values.fechaVenta , totalVenta: total , Cliente_idUsuario: cliente.idUsuario , Cajero_idUsuario1: usuario.idUsuario , TipoVenta_idTipoVenta: values.TipoVenta_idTipoVenta , documentodeventa_idDocumentoDeVenta: values.documentodeventa_idDocumentoDeVenta, mediopago_idMedioPago : values.mediopago_idMedioPago, detalleVenta, dineroEfectivoPagadoventa : values.dineroEfectivoPagadoventa, dineroTarjetaPagadoventa : values.dineroTarjetaPagadoventa })
                                     .then(res => {
                                         if(res.status===200){
                                             resetForm({values: ''});
@@ -139,7 +192,7 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                 }
                                                
                             }}
-                        >
+                        > 
                             <Form>
                             <div className="accordion" id="accordionExample">
                                 <div className="accordion-item">
@@ -150,12 +203,8 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                     </h2>
                                     <div id="collapseOne" className="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                     <div className="accordion-body">
-                                        <div className="card" style={{"width": "100%"}}>
+                                        <div className="" style={{"width": "100%"}}>
                                             <div className="card-body">
-                                                <InputReadOnly name="idVenta" label="Id Venta" type="hidden"/>
-                                                <div className="mb-3">
-                                                    <label className="form-label" >{`Total : $${formatoDinero(total)}`}</label>
-                                                </div>
                                                 <InputReadOnly name="totalVenta" label="Total Venta" type="hidden"/>
                                                 <InputReadOnly name="Cliente_idUsuario" label="Id Cliente" type="hidden"/>
                                                 <InputReadOnly name="Cajero_idUsuario1" label="Id Cajero" type="hidden"/>
@@ -165,12 +214,56 @@ const Pagar = ({cerrar,funcionAdicionalSet, detalleVenta, cliente, usuario})=>{
                                                 </Select>
                                                 <Select name="documentodeventa_idDocumentoDeVenta" label="Documento de Venta">
                                                     <option>Seleccione</option>
-                                                    {documentoDeVenta.map((value,key)=><option key={key+'-estado'} value={value.idDocumentoDeVenta}>{value.nombreDocumentoDeVenta}</option>)}
+                                                    {documentoDeVenta.map((value,key)=><option key={key+'-documento-de-venta'} value={value.idDocumentoDeVenta}>{value.nombreDocumentoDeVenta}</option>)}
                                                 </Select>
                                                 <Select name="mediopago_idMedioPago" label="Medio de Pago">
-                                                    <option>Seleccione</option>
-                                                    {medioDePago.map((value,key)=><option key={key+'-estado'} value={value.idMedioPago}>{value.nombreMedioPago}</option>)}
+                                                    <option>Seleccione</option> 
+                                                    {medioDePago.map((value,key)=><option  value={value.idMedioPago}>{value.nombreMedioPago}</option>)}
                                                 </Select>
+                                                {
+                                                    medioDePago.map((value,key)=>{
+                                                        //console.log(value);
+                                                        //console.log(mediosDePago);
+                                                        const idMedioPago = value.idMedioPago;
+                                                        var estadoMedioPago = null;
+                                                        if(mediosDePago.length>0){
+                                                            estadoMedioPago = mediosDePago.find((e)=>e.id===idMedioPago);
+                                                            //console.log(estadoMedioPago);
+                                                        }
+                                                        
+                                                        return (
+                                                                <>
+                                                                    <Checkbox key={key+'-medio-de-pago'} name={idMedioPago}> 
+                                                                        {value.nombreMedioPago}
+                                                                    </Checkbox>
+                                                                    {
+                                                                        mediosDePago.length>0 ?
+                                                                            estadoMedioPago.valor===true?
+                                                                                <>
+                                                                                <Input name={`dinero-${estadoMedioPago.id}`} label={`Ingrese el dinero de ${estadoMedioPago.nombre}`} type="number"/>
+                                                                                {estadoMedioPago.registrarId==='SI'?
+                                                                                    <Input name={`registro-id-${estadoMedioPago.id}`} label={`Ingrese el Número de ${estadoMedioPago.nombre}`} type="text"/>
+                                                                                :
+                                                                                null
+                                                                                }
+                                                                                </>
+                                                                                :null
+                                                                        : null
+                                                                    }
+                                                                </>
+                                                        )
+                                                    })
+                                                }
+                                                
+                                                <InputReadOnly name="idVenta" label="Id Venta" type="hidden"/>
+                                                <div className="mb-3">
+                                                    <label className="form-label" ><h4>{`Total a Pagar: $${formatoDinero(total)}`}</h4></label>
+                                                </div>
+                                                <Input name="dineroEfectivoPagadoventa" label={"Dinero en Efectivo"} type="number"/>
+                                                <div className="mb-3">
+                                                    <label className="form-label" ><h5>{`Vuelto ${parseInt(vueltoEfectivo)<0?"(aun falta pagar)":""}: $${formatoDinero(vueltoEfectivo)}`}</h5></label>
+                                                </div>
+                                                <Input name="dineroTarjetaPagadoventa" label={"Pago Dinero tarjeta"} type="number"/>
                                             </div>
                                             <div className="card-footer">
                                                 <div className="row">

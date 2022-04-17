@@ -163,8 +163,8 @@ const DetalleCompra = ({children, logOut, conseguirPermisos, usuario})=>{
                                         }*/
                                         
                                     }
-                                    console.log(values);
-                                    console.log(errors);
+                                    //console.log(values);
+                                    //console.log(errors);
                                     return errors
                                 }
                             }

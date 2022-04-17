@@ -19,17 +19,17 @@ router.post("/listar",(req, res)=>{
 });
 router.put("/insertar",(req, res)=>{
     const { body } = req;
-    const { nombreTipoVenta }= body;
+    const { nombreTipoVenta, EstadoDinero_idEstadoDinero }= body;
     RouterRespuestas(
-                    async ()=> await tipoVenta.insertar(nombreTipoVenta),
+                    async ()=> await tipoVenta.insertar(nombreTipoVenta, EstadoDinero_idEstadoDinero),
                     res
                     );
 });
 router.put("/editar",(req, res)=>{
     const { body } = req;
-    const { nombreTipoVenta,idTipoVenta }= body;
+    const { nombreTipoVenta,idTipoVenta,EstadoDinero_idEstadoDinero }= body;
     RouterRespuestas(
-                    async ()=> await tipoVenta.editar(nombreTipoVenta,idTipoVenta),
+                    async ()=> await tipoVenta.editar(nombreTipoVenta,EstadoDinero_idEstadoDinero,idTipoVenta),
                     res
                     );
 });

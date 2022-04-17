@@ -42,6 +42,7 @@ class Productos extends mysql{
                 }
             }
         }
+        console.log(where);
         let resp = {
             datos : await this.consulta("SELECT * FROM producto "+where+" "+this.paginador(pagSiguiente, cantPorPag),parametrosBuscar),
             cantidad : await this.consulta("SELECT count(idProducto) as cantidad FROM producto "+where+" ",parametrosBuscar)
