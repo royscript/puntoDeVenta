@@ -56,6 +56,12 @@ app.use('/api/estado-dinero/',EstadoDinero);
 
 
 //------SUBIR APP--------------
-app.listen(process.env.PORT_NODE, ()=>{
+app.listen(process.env.PORT_NODE,()=>{
     console.log("Servidor Node JS "+process.env.PORT_NODE);
 });
+/*
+http.createServer(function (req, res) { 
+    res.writeHead(200, {'Content-Type': 'text/plain'}); 
+    res.end('Hello World\n'); 
+}).listen(8080, "0.0.0.0");
+*/
